@@ -1,6 +1,8 @@
-import { Stack, Text, Title } from '@mantine/core';
+import { Group, Stack, Text, Title } from '@mantine/core';
+import { Plus } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { LinkButton } from '@/components/common/LinkButton';
 import { VocabFilters } from '@/components/vocab/VocabFilters';
 import { VocabListRow, type VocabListItem } from '@/components/vocab/VocabListRow';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -59,12 +61,23 @@ export default async function VocabPage({
 
   return (
     <Stack gap="lg">
-      <Stack gap={4}>
-        <Title order={2}>{t('title')}</Title>
-        <Text c="dimmed" size="sm">
-          {t('subtitle')}
-        </Text>
-      </Stack>
+      <Group justify="space-between" align="flex-end" wrap="wrap" gap="md">
+        <Stack gap={4}>
+          <Title order={2}>{t('title')}</Title>
+          <Text c="dimmed" size="sm">
+            {t('subtitle')}
+          </Text>
+        </Stack>
+        <LinkButton
+          href="/vocab/new"
+          variant="light"
+          color="indigo"
+          leftSection={<Plus size={14} />}
+          size="xs"
+        >
+          {t('addManual')}
+        </LinkButton>
+      </Group>
 
       <VocabFilters currentStage={stage} stats={stats} />
 

@@ -6,8 +6,10 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { Sparkles } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { LinkButton } from '@/components/common/LinkButton';
 import { LinkCard } from '@/components/common/LinkCard';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -28,12 +30,23 @@ export default async function ReadListPage({
 
   return (
     <Stack gap="lg">
-      <Stack gap={4}>
-        <Title order={2}>{t('title')}</Title>
-        <Text c="dimmed" size="sm">
-          {t('subtitle')}
-        </Text>
-      </Stack>
+      <Group justify="space-between" align="flex-end" wrap="wrap" gap="md">
+        <Stack gap={4}>
+          <Title order={2}>{t('title')}</Title>
+          <Text c="dimmed" size="sm">
+            {t('subtitle')}
+          </Text>
+        </Stack>
+        <LinkButton
+          href="/read/new"
+          variant="light"
+          color="indigo"
+          leftSection={<Sparkles size={14} />}
+          size="xs"
+        >
+          {t('generateCta')}
+        </LinkButton>
+      </Group>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
         {(passages ?? []).map((p) => (

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import {
   Inter,
@@ -60,6 +60,20 @@ export const metadata: Metadata = {
     template: '%s · en-word-book',
   },
   description: 'TOEIC/TOEFL の長文から語彙を育てる学習アプリ',
+  appleWebApp: {
+    capable: true,
+    title: 'en-word-book',
+    statusBarStyle: 'default',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FAFAF7' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F1115' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export function generateStaticParams() {

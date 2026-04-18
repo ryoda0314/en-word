@@ -3,7 +3,6 @@
 import {
   Alert,
   Button,
-  Divider,
   PasswordInput,
   SegmentedControl,
   Stack,
@@ -49,22 +48,6 @@ export function LoginForm({
   });
 
   const supabase = createSupabaseBrowserClient();
-
-  async function handleGoogle() {
-    setLoading(true);
-    setFormError(null);
-    const callback = `${window.location.origin}/auth/callback`;
-    const params = new URLSearchParams({ locale });
-    if (next) params.set('next', next);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${callback}?${params.toString()}` },
-    });
-    if (error) {
-      setFormError(error.message);
-      setLoading(false);
-    }
-  }
 
   async function handleEmail(values: { email: string; password: string }) {
     setLoading(true);
@@ -112,17 +95,6 @@ export function LoginForm({
           { label: t('signUp'), value: 'signup' },
         ]}
       />
-
-      <Button
-        variant="default"
-        onClick={handleGoogle}
-        loading={loading}
-        fullWidth
-      >
-        {t('continueWithGoogle')}
-      </Button>
-
-      <Divider label={t('or')} labelPosition="center" />
 
       <form onSubmit={form.onSubmit(handleEmail)}>
         <Stack gap="sm">
