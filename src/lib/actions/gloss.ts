@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 
 import { lemmatize } from '@/lib/text/lemmatize';
+import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
 
@@ -38,7 +39,15 @@ export type GlossData = {
 
 export type GlossResult =
   | { ok: true; gloss: GlossData }
-  | { ok: false; error: 'UNAUTHENTICATED' | 'RATE_LIMITED' | 'AI_FAILED' | 'INVALID' };
+  | {
+      ok: false;
+      error:
+        | 'UNAUTHENTICATED'
+        | 'NOT_APPROVED'
+        | 'RATE_LIMITED'
+        | 'AI_FAILED'
+        | 'INVALID';
+    };
 
 const SYSTEM_PROMPT_WORD = `You are a concise English lexicographer writing for Japanese learners preparing for TOEIC/TOEFL.
 Return a JSON object matching the schema.
@@ -73,6 +82,9 @@ export async function lookupGloss(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'UNAUTHENTICATED' };
+  if (!(await isApproved(supabase))) {
+    return { ok: false, error: 'NOT_APPROVED' };
+  }
 
   const normalizedTerm =
     kind === 'word' ? lemmatize(term) : term.trim().toLowerCase().replace(/\s+/g, ' ');

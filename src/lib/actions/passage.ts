@@ -3,6 +3,7 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
 
+import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
 
@@ -41,7 +42,13 @@ export type GeneratePassageResult =
   | { ok: true; passageId: string; slug: string }
   | {
       ok: false;
-      error: 'UNAUTHENTICATED' | 'RATE_LIMITED' | 'AI_FAILED' | 'INVALID' | 'DB';
+      error:
+        | 'UNAUTHENTICATED'
+        | 'NOT_APPROVED'
+        | 'RATE_LIMITED'
+        | 'AI_FAILED'
+        | 'INVALID'
+        | 'DB';
     };
 
 const WORD_COUNTS: Record<(typeof LENGTH_VALUES)[number], number> = {
@@ -79,6 +86,9 @@ export async function generatePassage(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'UNAUTHENTICATED' };
+  if (!(await isApproved(supabase))) {
+    return { ok: false, error: 'NOT_APPROVED' };
+  }
 
   const allowed = await checkAndBumpRate(user.id, 'openai.passage', 5);
   if (!allowed) return { ok: false, error: 'RATE_LIMITED' };

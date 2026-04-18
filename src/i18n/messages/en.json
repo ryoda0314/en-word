@@ -15,7 +15,8 @@
     "vocab": "Vocabulary",
     "review": "Review",
     "drill": "Drill",
-    "settings": "Settings"
+    "settings": "Settings",
+    "admin": "Admin"
   },
   "common": {
     "loading": "Loading…",
@@ -224,6 +225,29 @@
     "itemsToRedo": "items to redo",
     "lapseSummary": "{lapses} total lapses recorded across these items.",
     "start": "Start drill"
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Manage the allowlist. Only the emails listed here can use the app.",
+    "addTitle": "Add a user",
+    "emailLabel": "Email",
+    "noteLabel": "Note (optional)",
+    "noteDesc": "A short note to remember who this is.",
+    "notePlaceholder": "e.g., Friend, coworker",
+    "add": "Add to allowlist",
+    "currentTitle": "Approved users",
+    "count": "{count} people",
+    "empty": "No users yet.",
+    "addedAt": "Added",
+    "remove": "Remove"
+  },
+  "pending": {
+    "title": "Waiting for admin approval",
+    "subtitle": "This app is invite-only. You'll be let in as soon as the admin approves your email.",
+    "signedInAs": "Signed in as",
+    "howToRequest": "Share your email with the admin and ask to be added to the allowlist. Press Recheck once you've been approved.",
+    "recheck": "Recheck",
+    "signOut": "Sign out"
   },
   "settings": {
     "title": "Settings",

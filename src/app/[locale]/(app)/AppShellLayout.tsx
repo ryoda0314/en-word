@@ -21,6 +21,7 @@ import {
   LogOut,
   Moon,
   Settings,
+  Shield,
   Sun,
   Target,
 } from 'lucide-react';
@@ -39,12 +40,20 @@ const navItems = [
   { href: '/settings', labelKey: 'settings', icon: Settings },
 ] as const;
 
+const adminNavItem = {
+  href: '/admin',
+  labelKey: 'admin',
+  icon: Shield,
+} as const;
+
 export function AppShellLayout({
   children,
   userEmail,
+  isAdmin = false,
 }: {
   children: ReactNode;
   userEmail: string | null;
+  isAdmin?: boolean;
 }) {
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
@@ -112,6 +121,20 @@ export function AppShellLayout({
               mb={2}
             />
           ))}
+          {isAdmin ? (
+            <NavLink
+              component={Link}
+              href={adminNavItem.href}
+              label={t(adminNavItem.labelKey)}
+              leftSection={<adminNavItem.icon size={18} />}
+              active={
+                pathname === adminNavItem.href ||
+                pathname.startsWith(`${adminNavItem.href}/`)
+              }
+              onClick={close}
+              mb={2}
+            />
+          ) : null}
         </AppShell.Section>
         {userEmail ? (
           <AppShell.Section>

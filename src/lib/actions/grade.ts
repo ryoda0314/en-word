@@ -3,6 +3,7 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
 
+import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
 
@@ -28,7 +29,12 @@ export type GradeResult =
   | { ok: true; grade: GradeData; sentenceId: string }
   | {
       ok: false;
-      error: 'UNAUTHENTICATED' | 'RATE_LIMITED' | 'AI_FAILED' | 'INVALID';
+      error:
+        | 'UNAUTHENTICATED'
+        | 'NOT_APPROVED'
+        | 'RATE_LIMITED'
+        | 'AI_FAILED'
+        | 'INVALID';
     };
 
 const SYSTEM_PROMPT = `You grade a one-sentence English writing attempt by a Japanese TOEIC/TOEFL learner.
@@ -54,6 +60,9 @@ export async function gradeSentence(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'UNAUTHENTICATED' };
+  if (!(await isApproved(supabase))) {
+    return { ok: false, error: 'NOT_APPROVED' };
+  }
 
   const allowed = await checkAndBumpRate(user.id, 'openai.grade', 15);
   if (!allowed) return { ok: false, error: 'RATE_LIMITED' };
