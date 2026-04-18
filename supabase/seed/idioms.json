@@ -1,0 +1,142 @@
+[
+  {
+    "phrase": "take advantage of",
+    "meaning_ja": "〜を利用する、〜に乗じる",
+    "meaning_en": "to use a situation or opportunity to gain a benefit",
+    "example_en": "They took advantage of the sale to buy new equipment.",
+    "example_ja": "彼らはセールを利用して新しい機器を購入した。"
+  },
+  {
+    "phrase": "in charge of",
+    "meaning_ja": "〜を担当して、〜を任されて",
+    "meaning_en": "responsible for something or someone",
+    "example_en": "She is in charge of the marketing team.",
+    "example_ja": "彼女はマーケティングチームを担当している。"
+  },
+  {
+    "phrase": "rely on",
+    "meaning_ja": "〜を頼りにする、〜に依存する",
+    "meaning_en": "to trust or depend on something or someone",
+    "example_en": "We rely on this supplier for all our parts.",
+    "example_ja": "全ての部品をこのサプライヤーに頼っている。"
+  },
+  {
+    "phrase": "be familiar with",
+    "meaning_ja": "〜に精通している、〜をよく知っている",
+    "meaning_en": "to know something well",
+    "example_en": "She is familiar with the new software.",
+    "example_ja": "彼女は新しいソフトウェアに精通している。"
+  },
+  {
+    "phrase": "get in touch with",
+    "meaning_ja": "〜と連絡を取る",
+    "meaning_en": "to contact someone",
+    "example_en": "Please get in touch with the client by tomorrow.",
+    "example_ja": "明日までにクライアントと連絡を取ってください。"
+  },
+  {
+    "phrase": "look forward to",
+    "meaning_ja": "〜を楽しみにする",
+    "meaning_en": "to feel pleased and excited about something that is going to happen",
+    "example_en": "I look forward to meeting you next week.",
+    "example_ja": "来週お会いできるのを楽しみにしている。"
+  },
+  {
+    "phrase": "be responsible for",
+    "meaning_ja": "〜に責任がある、〜を担当している",
+    "meaning_en": "to be in charge of or to blame for something",
+    "example_en": "He is responsible for quality control.",
+    "example_ja": "彼は品質管理の責任者である。"
+  },
+  {
+    "phrase": "catch up with",
+    "meaning_ja": "〜に追いつく、〜と近況を話す",
+    "meaning_en": "to reach the same level or position as someone/something",
+    "example_en": "I need to catch up with my emails.",
+    "example_ja": "溜まったメールに追いつく必要がある。"
+  },
+  {
+    "phrase": "come up with",
+    "meaning_ja": "〜を思いつく、〜を考え出す",
+    "meaning_en": "to think of or suggest an idea or plan",
+    "example_en": "They came up with a creative solution.",
+    "example_ja": "彼らは創造的な解決策を思いついた。"
+  },
+  {
+    "phrase": "keep track of",
+    "meaning_ja": "〜を把握する、〜を記録しておく",
+    "meaning_en": "to continue to be informed about something",
+    "example_en": "Please keep track of all your receipts.",
+    "example_ja": "全てのレシートを記録しておいてください。"
+  },
+  {
+    "phrase": "deal with",
+    "meaning_ja": "〜に対処する、〜を扱う",
+    "meaning_en": "to take action to solve or manage a problem",
+    "example_en": "We need to deal with this issue promptly.",
+    "example_ja": "この問題に迅速に対処する必要がある。"
+  },
+  {
+    "phrase": "run out of",
+    "meaning_ja": "〜を切らす、〜がなくなる",
+    "meaning_en": "to use all of something so there is none left",
+    "example_en": "We ran out of paper for the printer.",
+    "example_ja": "プリンター用の紙を切らしてしまった。"
+  },
+  {
+    "phrase": "take care of",
+    "meaning_ja": "〜の世話をする、〜を処理する",
+    "meaning_en": "to look after or handle something",
+    "example_en": "I will take care of the arrangements.",
+    "example_ja": "手配は私が担当する。"
+  },
+  {
+    "phrase": "stand out",
+    "meaning_ja": "目立つ、抜きん出る",
+    "meaning_en": "to be easily seen or noticed; to be better than others",
+    "example_en": "Her presentation stood out from the rest.",
+    "example_ja": "彼女のプレゼンは他より抜きん出ていた。"
+  },
+  {
+    "phrase": "end up",
+    "meaning_ja": "結局〜になる、最終的に〜に至る",
+    "meaning_en": "to eventually be in a particular place or situation",
+    "example_en": "We ended up working late last night.",
+    "example_ja": "結局昨夜は遅くまで働いた。"
+  },
+  {
+    "phrase": "make sure",
+    "meaning_ja": "確実にする、確認する",
+    "meaning_en": "to take action so that you are certain something happens",
+    "example_en": "Please make sure the door is locked.",
+    "example_ja": "必ずドアが施錠されていることを確認してください。"
+  },
+  {
+    "phrase": "figure out",
+    "meaning_ja": "理解する、解決策を見つける",
+    "meaning_en": "to understand or solve something",
+    "example_en": "Let's figure out what went wrong.",
+    "example_ja": "何がうまくいかなかったのか解明しよう。"
+  },
+  {
+    "phrase": "go over",
+    "meaning_ja": "〜を見直す、〜を復習する",
+    "meaning_en": "to examine or check something carefully",
+    "example_en": "Let's go over the contract one more time.",
+    "example_ja": "契約書をもう一度見直そう。"
+  },
+  {
+    "phrase": "take into account",
+    "meaning_ja": "〜を考慮に入れる",
+    "meaning_en": "to consider a particular fact when making a decision",
+    "example_en": "We must take shipping costs into account.",
+    "example_ja": "輸送費を考慮に入れなければならない。"
+  },
+  {
+    "phrase": "be subject to",
+    "meaning_ja": "〜の対象となる、〜の影響を受ける",
+    "meaning_en": "to be likely to be affected by something, often something negative",
+    "example_en": "All prices are subject to change without notice.",
+    "example_ja": "全ての価格は予告なく変更される場合がある。"
+  }
+]

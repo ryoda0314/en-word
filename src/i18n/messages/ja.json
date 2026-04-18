@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "en-word-book",
+    "tagline": "読んで、拾って、使えるまで。"
+  },
+  "home": {
+    "heroTitle": "TOEIC/TOEFL 長文から、あなたの語彙を育てる。",
+    "heroBody": "本物の英文を読みながら、気になった語句をタップで収集。暗記から作文まで一本の流れで定着させる学習アプリです。",
+    "ctaStart": "はじめる",
+    "ctaLogin": "ログイン"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "read": "読む",
+    "vocab": "語彙帳",
+    "review": "レビュー",
+    "drill": "ドリル",
+    "settings": "設定"
+  },
+  "common": {
+    "loading": "読み込み中…",
+    "signIn": "サインイン",
+    "signOut": "サインアウト"
+  },
+  "auth": {
+    "title": "en-word-book へようこそ",
+    "subtitle": "学習履歴を保存するにはサインインしてください",
+    "signIn": "サインイン",
+    "signUp": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "continueWithGoogle": "Google で続ける",
+    "or": "または",
+    "confirmEmail": "確認メールを送信しました。メール内のリンクを開いて登録を完了してください。",
+    "genericError": "サインインに失敗しました。もう一度お試しください。",
+    "invalidEmail": "正しいメールアドレスを入力してください",
+    "shortPassword": "パスワードは 8 文字以上で入力してください"
+  },
+  "read": {
+    "title": "読む",
+    "subtitle": "TOEIC/TOEFL 風の長文から語彙を拾いましょう。",
+    "wordCount": "{count, plural, =0 {語} other {# 語}}",
+    "tapHint": "気になった単語・熟語をタップすると意味が表示され、語彙帳に追加できます。"
+  },
+  "reader": {
+    "saved": "登録済み",
+    "addToVocab": "語彙帳に追加",
+    "idiomBadge": "熟語",
+    "phraseBadge": "フレーズ",
+    "saveWordAlso": "単語「{word}」も登録",
+    "lookupPhrase": "フレーズを調べる",
+    "lookingUp": "AI が意味を生成中…",
+    "aiFailed": "AI 呼び出しに失敗しました。少し経ってから再試行してください。",
+    "rateLimited": "短時間に多くの呼び出しがありました。1 分ほど待って再試行してください。",
+    "notSignedIn": "サインインが必要です。",
+    "retry": "再試行",
+    "aiBadge": "AI",
+    "fromDict": "辞書",
+    "inThisPassage": "この長文の中での文脈"
+  },
+  "vocab": {
+    "title": "語彙帳",
+    "subtitle": "登録した単語・熟語・フレーズの一覧です。",
+    "empty": "まだ語句が登録されていません。読解ページでタップして追加してください。",
+    "all": "すべて",
+    "due": "レビュー期限",
+    "custom": "カスタム",
+    "phrase": "フレーズ",
+    "word": "単語",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "confirmDeleteTitle": "語彙帳から削除",
+    "confirmDeleteBody": "「{name}」を語彙帳から削除します。これまでのレビュー履歴もまとめて削除されます。",
+    "dueNow": "今すぐレビュー",
+    "dueLater": "今日中",
+    "dueInDays": "あと {days} 日",
+    "stage": {
+      "memorize": "暗記",
+      "recognize": "文中認識",
+      "produce": "作文",
+      "mastered": "定着"
+    },
+    "detail": {
+      "stage": "ステージ",
+      "nextReview": "次のレビュー",
+      "meaning": "意味",
+      "example": "例文",
+      "contextSentence": "保存時の文脈",
+      "fromPassage": "出典"
+    }
+  },
+  "review": {
+    "title": "レビュー",
+    "entrySubtitle": "期日が来たカードを 1 件ずつ確認して、記憶を定着させましょう。",
+    "cardsDue": "件のカード",
+    "start": "始める",
+    "allClearTitle": "今日はすべて完了",
+    "allClearBody": "レビュー期限のカードはありません。読む/語彙帳から新しい語を追加しましょう。",
+    "reveal": "答えを見る",
+    "check": "確認",
+    "fillBlank": "空所に入る語を考えよう",
+    "meaningPrompt": "この意味の単語は？",
+    "typeAnswerPlaceholder": "入力（任意）",
+    "yourAnswer": "あなた",
+    "answer": "正解",
+    "correct": "一致",
+    "noInput": "（未入力）",
+    "again": "もう一度",
+    "hard": "難しい",
+    "good": "普通",
+    "easy": "簡単",
+    "writeSentenceUsing": "この単語を使って文を書いてください",
+    "sentencePlaceholder": "例: She took a pragmatic approach to the problem.",
+    "gradeWithAi": "AI で採点",
+    "gradingInProgress": "採点中…",
+    "gradeFailed": "採点に失敗しました。もう一度お試しください。",
+    "gradeRateLimited": "採点リクエストが多すぎます。1 分ほど待って再試行してください。",
+    "retry": "再試行",
+    "grammar": "文法",
+    "meaning": "意味",
+    "naturalness": "自然さ",
+    "total": "総合",
+    "corrected": "添削後",
+    "next": "次へ",
+    "backHome": "レビュー画面へ戻る",
+    "summaryTitle": "セッション完了",
+    "summarySubtitle": "{count} 枚のカードを復習しました。",
+    "summary": {
+      "advanced": "ステージ昇格",
+      "mastered": "定着到達",
+      "lapsed": "要再学習"
+    },
+    "intervalMinutes": "あと {m} 分で再出題",
+    "intervalDays": "あと {d} 日で再出題"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "今日の学習と進捗",
+    "days": "日",
+    "stats": {
+      "dueToday": "今日のレビュー",
+      "streak": "連続日数",
+      "totalVocab": "登録語句",
+      "mastered": "定着済み"
+    },
+    "actions": {
+      "reviewTitle": "レビュー",
+      "reviewBody": "期限が来たカードが {count} 件あります。",
+      "reviewAllClear": "期限のカードはありません。",
+      "startReview": "レビューを始める",
+      "allClear": "今日は完了",
+      "drillTitle": "弱点ドリル",
+      "drillBody": "過去に間違えた語句が {count} 件あります。",
+      "drillEmpty": "今のところ要再学習の語句はありません。",
+      "startDrill": "ドリルを始める",
+      "noDrill": "対象なし"
+    },
+    "recent": {
+      "title": "最近登録した語句",
+      "subtitle": "読解で拾ってきた順に表示",
+      "browse": "長文を読む",
+      "empty": "まずは読むページで語句をタップして登録しましょう。"
+    }
+  },
+  "drill": {
+    "title": "弱点ドリル",
+    "subtitle": "過去に間違えた語句を集中的に復習します。通常レビューと違い、期限に関わらず出題されます。",
+    "emptyTitle": "要再学習の語句はありません",
+    "emptyBody": "レビューで「もう一度」や「難しい」を選んだ語句がここに集まります。",
+    "itemsToRedo": "件の要再学習語句",
+    "lapseSummary": "通算 {lapses} 回の要再学習を記録しています。",
+    "start": "ドリルを始める"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "アカウントと学習の設定を変更できます。",
+    "preferences": "学習の設定",
+    "uiLocale": "UI の言語",
+    "uiLocaleDesc": "画面のラベルやボタンの言語。変更すると自動的にページが切り替わります。",
+    "meaningLocale": "意味表示の言語",
+    "meaningLocaleDesc": "単語・熟語の意味をどちらで表示するか。両方にすると日本語と英語を並記します。",
+    "meaningOptions": {
+      "ja": "日本語のみ",
+      "en": "英語のみ",
+      "both": "日本語 + 英語"
+    },
+    "dailyGoal": "1 日の目標レビュー件数",
+    "dailyGoalDesc": "ダッシュボードの進捗表示に使います。",
+    "timezone": "タイムゾーン",
+    "save": "保存",
+    "saved": "保存しました",
+    "account": "アカウント",
+    "displayName": "表示名",
+    "email": "メールアドレス"
+  }
+}

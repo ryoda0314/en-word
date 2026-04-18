@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "en-word-book",
+    "tagline": "Read. Capture. Produce."
+  },
+  "home": {
+    "heroTitle": "Grow your vocabulary from real TOEIC/TOEFL passages.",
+    "heroBody": "Read authentic English, tap any word or phrase to capture it, and progress from memorization to real sentence production — all in one loop.",
+    "ctaStart": "Get started",
+    "ctaLogin": "Sign in"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "read": "Read",
+    "vocab": "Vocabulary",
+    "review": "Review",
+    "drill": "Drill",
+    "settings": "Settings"
+  },
+  "common": {
+    "loading": "Loading…",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "title": "Welcome to en-word-book",
+    "subtitle": "Sign in to save your learning progress",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "confirmEmail": "We sent you a confirmation email. Open the link in the email to complete signup.",
+    "genericError": "Sign in failed. Please try again.",
+    "invalidEmail": "Please enter a valid email address",
+    "shortPassword": "Password must be at least 8 characters"
+  },
+  "read": {
+    "title": "Read",
+    "subtitle": "Pick up vocabulary from authentic TOEIC/TOEFL-style passages.",
+    "wordCount": "{count, plural, =0 {words} one {# word} other {# words}}",
+    "tapHint": "Tap any word or phrase to see its meaning and save it to your vocabulary."
+  },
+  "reader": {
+    "saved": "Saved",
+    "addToVocab": "Add to vocab",
+    "idiomBadge": "Idiom",
+    "phraseBadge": "Phrase",
+    "saveWordAlso": "Also save word \"{word}\"",
+    "lookupPhrase": "Look up phrase",
+    "lookingUp": "AI is looking this up…",
+    "aiFailed": "AI lookup failed. Please retry in a moment.",
+    "rateLimited": "Too many requests in a short time. Please wait a minute.",
+    "notSignedIn": "Sign in required.",
+    "retry": "Retry",
+    "aiBadge": "AI",
+    "fromDict": "Dict",
+    "inThisPassage": "Context in this passage"
+  },
+  "vocab": {
+    "title": "Vocabulary",
+    "subtitle": "Words, idioms and phrases you have saved.",
+    "empty": "No items yet. Tap a word or drag-select a phrase in a reading to add one.",
+    "all": "All",
+    "due": "Due",
+    "custom": "Custom",
+    "phrase": "Phrase",
+    "word": "Word",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDeleteTitle": "Delete from vocabulary",
+    "confirmDeleteBody": "Remove \"{name}\" from your vocabulary. Past review history will also be deleted.",
+    "dueNow": "Due now",
+    "dueLater": "Due today",
+    "dueInDays": "In {days} days",
+    "stage": {
+      "memorize": "Memorize",
+      "recognize": "Recognize",
+      "produce": "Produce",
+      "mastered": "Mastered"
+    },
+    "detail": {
+      "stage": "Stage",
+      "nextReview": "Next review",
+      "meaning": "Meaning",
+      "example": "Example",
+      "contextSentence": "Context when saved",
+      "fromPassage": "From"
+    }
+  },
+  "review": {
+    "title": "Review",
+    "entrySubtitle": "Go through your due cards one by one to cement memory.",
+    "cardsDue": "cards due",
+    "start": "Start",
+    "allClearTitle": "All caught up",
+    "allClearBody": "No cards are due. Add new ones from readings or your vocab list.",
+    "reveal": "Show answer",
+    "check": "Check",
+    "fillBlank": "Fill in the blank",
+    "meaningPrompt": "What word matches this meaning?",
+    "typeAnswerPlaceholder": "Type (optional)",
+    "yourAnswer": "You",
+    "answer": "Answer",
+    "correct": "Match",
+    "noInput": "(no input)",
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy",
+    "writeSentenceUsing": "Write a sentence using",
+    "sentencePlaceholder": "e.g., She took a pragmatic approach to the problem.",
+    "gradeWithAi": "Grade with AI",
+    "gradingInProgress": "Grading…",
+    "gradeFailed": "Grading failed. Please retry.",
+    "gradeRateLimited": "Too many grading requests. Please wait a minute.",
+    "retry": "Retry",
+    "grammar": "Grammar",
+    "meaning": "Meaning",
+    "naturalness": "Natural",
+    "total": "Total",
+    "corrected": "Corrected",
+    "next": "Next",
+    "backHome": "Back to review",
+    "summaryTitle": "Session complete",
+    "summarySubtitle": "Reviewed {count} cards.",
+    "summary": {
+      "advanced": "Stage advanced",
+      "mastered": "Reached mastery",
+      "lapsed": "Needs redo"
+    },
+    "intervalMinutes": "Next in {m} min",
+    "intervalDays": "Next in {d} days"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Today's learning and progress",
+    "days": "days",
+    "stats": {
+      "dueToday": "Due today",
+      "streak": "Day streak",
+      "totalVocab": "Total vocab",
+      "mastered": "Mastered"
+    },
+    "actions": {
+      "reviewTitle": "Review",
+      "reviewBody": "{count} cards are due for review.",
+      "reviewAllClear": "No cards are due right now.",
+      "startReview": "Start review",
+      "allClear": "Done for today",
+      "drillTitle": "Weak-spot drill",
+      "drillBody": "{count} items have lapses you can practice.",
+      "drillEmpty": "No lapsed items to drill.",
+      "startDrill": "Start drill",
+      "noDrill": "Nothing to drill"
+    },
+    "recent": {
+      "title": "Recently saved",
+      "subtitle": "Items picked up from readings",
+      "browse": "Browse passages",
+      "empty": "Tap a word in a passage to add your first item."
+    }
+  },
+  "drill": {
+    "title": "Weak-spot drill",
+    "subtitle": "Revisit items you have struggled with. Runs any time, regardless of SRS schedule.",
+    "emptyTitle": "Nothing to redo",
+    "emptyBody": "Items you marked Again or Hard in review will appear here.",
+    "itemsToRedo": "items to redo",
+    "lapseSummary": "{lapses} total lapses recorded across these items.",
+    "start": "Start drill"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and learning preferences.",
+    "preferences": "Learning preferences",
+    "uiLocale": "UI language",
+    "uiLocaleDesc": "Language of on-screen labels. Saving switches the page automatically.",
+    "meaningLocale": "Meaning display",
+    "meaningLocaleDesc": "How glosses are shown. Both shows Japanese and English together.",
+    "meaningOptions": {
+      "ja": "Japanese only",
+      "en": "English only",
+      "both": "Japanese + English"
+    },
+    "dailyGoal": "Daily review goal",
+    "dailyGoalDesc": "Used to compute dashboard progress.",
+    "timezone": "Time zone",
+    "save": "Save",
+    "saved": "Saved",
+    "account": "Account",
+    "displayName": "Display name",
+    "email": "Email"
+  }
+}

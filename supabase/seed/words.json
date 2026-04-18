@@ -1,0 +1,502 @@
+[
+  {
+    "lemma": "acquire",
+    "pos": "verb",
+    "ipa": "/əˈkwaɪər/",
+    "meaning_ja": "獲得する、身につける、（企業を）買収する",
+    "meaning_en": "to get or obtain something",
+    "example_en": "The company acquired a small startup last year.",
+    "example_ja": "その会社は昨年、小さなスタートアップを買収した。",
+    "frequency_rank": 900
+  },
+  {
+    "lemma": "adequate",
+    "pos": "adj",
+    "ipa": "/ˈædɪkwət/",
+    "meaning_ja": "十分な、適切な",
+    "meaning_en": "enough or satisfactory for a particular purpose",
+    "example_en": "Please ensure you have adequate time to complete the task.",
+    "example_ja": "作業を完了するのに十分な時間を確保してください。",
+    "frequency_rank": 1400
+  },
+  {
+    "lemma": "allocate",
+    "pos": "verb",
+    "ipa": "/ˈæləkeɪt/",
+    "meaning_ja": "割り当てる、配分する",
+    "meaning_en": "to decide officially that a particular amount of something should be used for a particular purpose",
+    "example_en": "We need to allocate more budget to marketing this quarter.",
+    "example_ja": "今四半期はマーケティングにもっと予算を配分する必要がある。",
+    "frequency_rank": 1800
+  },
+  {
+    "lemma": "apologize",
+    "pos": "verb",
+    "ipa": "/əˈpɒlədʒaɪz/",
+    "meaning_ja": "謝罪する、お詫びする",
+    "meaning_en": "to say that you are sorry for doing something wrong",
+    "example_en": "We sincerely apologize for the inconvenience caused.",
+    "example_ja": "ご迷惑をおかけしたことを心よりお詫び申し上げます。",
+    "frequency_rank": 1600
+  },
+  {
+    "lemma": "assess",
+    "pos": "verb",
+    "ipa": "/əˈses/",
+    "meaning_ja": "評価する、査定する",
+    "meaning_en": "to judge or decide the amount, value, or importance of something",
+    "example_en": "The manager will assess each candidate's qualifications.",
+    "example_ja": "マネージャーは各候補者の資格を評価する。",
+    "frequency_rank": 1200
+  },
+  {
+    "lemma": "attend",
+    "pos": "verb",
+    "ipa": "/əˈtend/",
+    "meaning_ja": "出席する、参加する",
+    "meaning_en": "to be present at an event or meeting",
+    "example_en": "All employees are required to attend the safety training.",
+    "example_ja": "全従業員が安全研修に出席する必要がある。",
+    "frequency_rank": 500
+  },
+  {
+    "lemma": "beneficial",
+    "pos": "adj",
+    "ipa": "/ˌbenɪˈfɪʃəl/",
+    "meaning_ja": "有益な、ためになる",
+    "meaning_en": "helpful, useful, or good",
+    "example_en": "Exercise is beneficial to your health.",
+    "example_ja": "運動は健康に有益である。",
+    "frequency_rank": 1700
+  },
+  {
+    "lemma": "budget",
+    "pos": "noun",
+    "ipa": "/ˈbʌdʒɪt/",
+    "meaning_ja": "予算",
+    "meaning_en": "the amount of money available for spending",
+    "example_en": "The project stayed within budget.",
+    "example_ja": "そのプロジェクトは予算内に収まった。",
+    "frequency_rank": 600
+  },
+  {
+    "lemma": "candidate",
+    "pos": "noun",
+    "ipa": "/ˈkændɪdeɪt/",
+    "meaning_ja": "候補者、受験者",
+    "meaning_en": "a person being considered for a job, position, or prize",
+    "example_en": "We interviewed three candidates for the role.",
+    "example_ja": "その職のために 3 人の候補者を面接した。",
+    "frequency_rank": 800
+  },
+  {
+    "lemma": "comprehensive",
+    "pos": "adj",
+    "ipa": "/ˌkɒmprɪˈhensɪv/",
+    "meaning_ja": "包括的な、総合的な",
+    "meaning_en": "including all, or almost all, the items that could be included",
+    "example_en": "We offer a comprehensive health plan for all employees.",
+    "example_ja": "全従業員向けに包括的な健康プランを提供している。",
+    "frequency_rank": 1300
+  },
+  {
+    "lemma": "confirm",
+    "pos": "verb",
+    "ipa": "/kənˈfɜːm/",
+    "meaning_ja": "確認する、承認する",
+    "meaning_en": "to state or show that something is definitely true",
+    "example_en": "Please confirm your attendance by Friday.",
+    "example_ja": "金曜日までに出席を確認してください。",
+    "frequency_rank": 400
+  },
+  {
+    "lemma": "coordinate",
+    "pos": "verb",
+    "ipa": "/koʊˈɔːrdɪneɪt/",
+    "meaning_ja": "調整する、連携する",
+    "meaning_en": "to organize the different parts of an activity so that they work together effectively",
+    "example_en": "She coordinates the work of three different teams.",
+    "example_ja": "彼女は 3 つの異なるチームの業務を調整している。",
+    "frequency_rank": 1100
+  },
+  {
+    "lemma": "deadline",
+    "pos": "noun",
+    "ipa": "/ˈdedlaɪn/",
+    "meaning_ja": "締切、期限",
+    "meaning_en": "a time or day by which something must be done",
+    "example_en": "The deadline for submissions is next Monday.",
+    "example_ja": "提出期限は来週月曜日である。",
+    "frequency_rank": 700
+  },
+  {
+    "lemma": "delay",
+    "pos": "noun",
+    "ipa": "/dɪˈleɪ/",
+    "meaning_ja": "遅延、遅れ",
+    "meaning_en": "a situation in which something happens later than planned",
+    "example_en": "The flight was canceled due to a long delay.",
+    "example_ja": "長時間の遅延により、フライトはキャンセルされた。",
+    "frequency_rank": 350
+  },
+  {
+    "lemma": "efficient",
+    "pos": "adj",
+    "ipa": "/ɪˈfɪʃənt/",
+    "meaning_ja": "効率的な、能率的な",
+    "meaning_en": "working in a well-organized way",
+    "example_en": "The new software is more efficient than the old one.",
+    "example_ja": "新しいソフトウェアは以前のものより効率的である。",
+    "frequency_rank": 550
+  },
+  {
+    "lemma": "eliminate",
+    "pos": "verb",
+    "ipa": "/ɪˈlɪmɪneɪt/",
+    "meaning_ja": "排除する、取り除く",
+    "meaning_en": "to completely remove or get rid of something",
+    "example_en": "We need to eliminate unnecessary expenses.",
+    "example_ja": "不要な経費を排除する必要がある。",
+    "frequency_rank": 1000
+  },
+  {
+    "lemma": "enhance",
+    "pos": "verb",
+    "ipa": "/ɪnˈhɑːns/",
+    "meaning_ja": "高める、強化する",
+    "meaning_en": "to improve the quality, amount, or strength of something",
+    "example_en": "The update will enhance the app's performance.",
+    "example_ja": "このアップデートはアプリのパフォーマンスを向上させる。",
+    "frequency_rank": 1500
+  },
+  {
+    "lemma": "estimate",
+    "pos": "verb",
+    "ipa": "/ˈestɪmeɪt/",
+    "meaning_ja": "見積もる、推定する",
+    "meaning_en": "to guess or calculate the cost, size, or value of something",
+    "example_en": "We estimate the project will take six months.",
+    "example_ja": "このプロジェクトは 6 か月かかると見積もっている。",
+    "frequency_rank": 650
+  },
+  {
+    "lemma": "evaluate",
+    "pos": "verb",
+    "ipa": "/ɪˈvæljueɪt/",
+    "meaning_ja": "評価する、査定する",
+    "meaning_en": "to judge or calculate the quality or value of something",
+    "example_en": "Please evaluate the proposal carefully.",
+    "example_ja": "その提案を慎重に評価してください。",
+    "frequency_rank": 950
+  },
+  {
+    "lemma": "expedite",
+    "pos": "verb",
+    "ipa": "/ˈekspədaɪt/",
+    "meaning_ja": "迅速に処理する、促進する",
+    "meaning_en": "to make a process happen more quickly",
+    "example_en": "We can expedite the shipping for an extra fee.",
+    "example_ja": "追加料金で配送を迅速化できる。",
+    "frequency_rank": 3200
+  },
+  {
+    "lemma": "facilitate",
+    "pos": "verb",
+    "ipa": "/fəˈsɪlɪteɪt/",
+    "meaning_ja": "容易にする、促進する",
+    "meaning_en": "to make something possible or easier",
+    "example_en": "The new platform facilitates communication between teams.",
+    "example_ja": "新しいプラットフォームはチーム間のコミュニケーションを促進する。",
+    "frequency_rank": 1900
+  },
+  {
+    "lemma": "feasible",
+    "pos": "adj",
+    "ipa": "/ˈfiːzəbəl/",
+    "meaning_ja": "実現可能な、実行可能な",
+    "meaning_en": "able to be done or achieved",
+    "example_en": "Is it feasible to complete this by Friday?",
+    "example_ja": "金曜日までに完了することは可能か？",
+    "frequency_rank": 2200
+  },
+  {
+    "lemma": "implement",
+    "pos": "verb",
+    "ipa": "/ˈɪmplɪment/",
+    "meaning_ja": "実施する、導入する",
+    "meaning_en": "to start using a plan, system, or law",
+    "example_en": "We plan to implement the new policy next month.",
+    "example_ja": "来月から新しい方針を実施する予定である。",
+    "frequency_rank": 800
+  },
+  {
+    "lemma": "inconvenience",
+    "pos": "noun",
+    "ipa": "/ˌɪnkənˈviːniəns/",
+    "meaning_ja": "不便、迷惑",
+    "meaning_en": "a situation that causes problems or difficulties",
+    "example_en": "We apologize for any inconvenience this may cause.",
+    "example_ja": "ご迷惑をおかけいたしますことをお詫び申し上げます。",
+    "frequency_rank": 2500
+  },
+  {
+    "lemma": "initiate",
+    "pos": "verb",
+    "ipa": "/ɪˈnɪʃieɪt/",
+    "meaning_ja": "開始する、着手する",
+    "meaning_en": "to cause a process or action to begin",
+    "example_en": "We will initiate the review process tomorrow.",
+    "example_ja": "明日、レビュープロセスを開始する。",
+    "frequency_rank": 1600
+  },
+  {
+    "lemma": "inquire",
+    "pos": "verb",
+    "ipa": "/ɪnˈkwaɪər/",
+    "meaning_ja": "問い合わせる、尋ねる",
+    "meaning_en": "to ask for information",
+    "example_en": "Please inquire at the front desk.",
+    "example_ja": "フロントでお問い合わせください。",
+    "frequency_rank": 2100
+  },
+  {
+    "lemma": "maintain",
+    "pos": "verb",
+    "ipa": "/meɪnˈteɪn/",
+    "meaning_ja": "維持する、保つ",
+    "meaning_en": "to keep something in good condition or at the same level",
+    "example_en": "It is essential to maintain accurate records.",
+    "example_ja": "正確な記録を維持することが不可欠である。",
+    "frequency_rank": 450
+  },
+  {
+    "lemma": "negotiate",
+    "pos": "verb",
+    "ipa": "/nɪˈɡoʊʃieɪt/",
+    "meaning_ja": "交渉する",
+    "meaning_en": "to try to reach an agreement by formal discussion",
+    "example_en": "They negotiated a better price with the supplier.",
+    "example_ja": "彼らはサプライヤーとより良い価格を交渉した。",
+    "frequency_rank": 900
+  },
+  {
+    "lemma": "objective",
+    "pos": "noun",
+    "ipa": "/əbˈdʒektɪv/",
+    "meaning_ja": "目的、目標",
+    "meaning_en": "something you plan to achieve",
+    "example_en": "Our main objective is to increase sales.",
+    "example_ja": "我々の主な目的は売上を増加させることである。",
+    "frequency_rank": 380
+  },
+  {
+    "lemma": "optimize",
+    "pos": "verb",
+    "ipa": "/ˈɒptɪmaɪz/",
+    "meaning_ja": "最適化する",
+    "meaning_en": "to make something as good or effective as possible",
+    "example_en": "We optimized the process to save time.",
+    "example_ja": "時間を節約するためにプロセスを最適化した。",
+    "frequency_rank": 1800
+  },
+  {
+    "lemma": "pragmatic",
+    "pos": "adj",
+    "ipa": "/præɡˈmætɪk/",
+    "meaning_ja": "実用的な、現実的な",
+    "meaning_en": "dealing with things sensibly and realistically",
+    "example_en": "She took a pragmatic approach to the problem.",
+    "example_ja": "彼女はその問題に対して現実的なアプローチを取った。",
+    "frequency_rank": 3200
+  },
+  {
+    "lemma": "prioritize",
+    "pos": "verb",
+    "ipa": "/praɪˈɒrɪtaɪz/",
+    "meaning_ja": "優先する、優先順位をつける",
+    "meaning_en": "to arrange things in order of importance",
+    "example_en": "We must prioritize customer satisfaction.",
+    "example_ja": "顧客満足を優先しなければならない。",
+    "frequency_rank": 1700
+  },
+  {
+    "lemma": "procedure",
+    "pos": "noun",
+    "ipa": "/prəˈsiːdʒər/",
+    "meaning_ja": "手順、手続き",
+    "meaning_en": "a set of actions done in a certain order",
+    "example_en": "Please follow the standard procedure for returns.",
+    "example_ja": "返品については標準的な手順に従ってください。",
+    "frequency_rank": 700
+  },
+  {
+    "lemma": "proficient",
+    "pos": "adj",
+    "ipa": "/prəˈfɪʃənt/",
+    "meaning_ja": "熟達した、堪能な",
+    "meaning_en": "skilled at doing something",
+    "example_en": "He is proficient in three languages.",
+    "example_ja": "彼は 3 か国語に堪能である。",
+    "frequency_rank": 2800
+  },
+  {
+    "lemma": "prohibit",
+    "pos": "verb",
+    "ipa": "/prəˈhɪbɪt/",
+    "meaning_ja": "禁止する",
+    "meaning_en": "to officially forbid something",
+    "example_en": "Smoking is prohibited in the building.",
+    "example_ja": "建物内での喫煙は禁止されている。",
+    "frequency_rank": 1300
+  },
+  {
+    "lemma": "proposal",
+    "pos": "noun",
+    "ipa": "/prəˈpoʊzəl/",
+    "meaning_ja": "提案、企画書",
+    "meaning_en": "a plan or suggestion, especially a formal one",
+    "example_en": "Please review the proposal before the meeting.",
+    "example_ja": "会議前に提案書を確認してください。",
+    "frequency_rank": 420
+  },
+  {
+    "lemma": "recommend",
+    "pos": "verb",
+    "ipa": "/ˌrekəˈmend/",
+    "meaning_ja": "推薦する、勧める",
+    "meaning_en": "to suggest that someone or something is suitable or good",
+    "example_en": "I recommend the new restaurant on Main Street.",
+    "example_ja": "メインストリートの新しいレストランをお勧めする。",
+    "frequency_rank": 300
+  },
+  {
+    "lemma": "reimburse",
+    "pos": "verb",
+    "ipa": "/ˌriːɪmˈbɜːrs/",
+    "meaning_ja": "払い戻す、償還する",
+    "meaning_en": "to pay money back to someone",
+    "example_en": "The company will reimburse all travel expenses.",
+    "example_ja": "会社は全ての出張費を払い戻す。",
+    "frequency_rank": 2400
+  },
+  {
+    "lemma": "relocate",
+    "pos": "verb",
+    "ipa": "/ˌriːloʊˈkeɪt/",
+    "meaning_ja": "移転する、移転させる",
+    "meaning_en": "to move to a new place",
+    "example_en": "The headquarters will relocate to Tokyo.",
+    "example_ja": "本社は東京に移転する。",
+    "frequency_rank": 2000
+  },
+  {
+    "lemma": "renovate",
+    "pos": "verb",
+    "ipa": "/ˈrenəveɪt/",
+    "meaning_ja": "改修する、改装する",
+    "meaning_en": "to repair and improve a building",
+    "example_en": "The hotel was completely renovated last year.",
+    "example_ja": "そのホテルは昨年完全に改装された。",
+    "frequency_rank": 2600
+  },
+  {
+    "lemma": "requirement",
+    "pos": "noun",
+    "ipa": "/rɪˈkwaɪərmənt/",
+    "meaning_ja": "要件、必要条件",
+    "meaning_en": "something that is needed or officially demanded",
+    "example_en": "A valid ID is a requirement for entry.",
+    "example_ja": "入場には有効な身分証が必要である。",
+    "frequency_rank": 500
+  },
+  {
+    "lemma": "resolve",
+    "pos": "verb",
+    "ipa": "/rɪˈzɒlv/",
+    "meaning_ja": "解決する、決意する",
+    "meaning_en": "to find a solution to a problem",
+    "example_en": "We must resolve this issue quickly.",
+    "example_ja": "この問題を迅速に解決しなければならない。",
+    "frequency_rank": 550
+  },
+  {
+    "lemma": "revise",
+    "pos": "verb",
+    "ipa": "/rɪˈvaɪz/",
+    "meaning_ja": "改訂する、修正する",
+    "meaning_en": "to change or correct something",
+    "example_en": "We need to revise the estimate.",
+    "example_ja": "見積もりを修正する必要がある。",
+    "frequency_rank": 1100
+  },
+  {
+    "lemma": "schedule",
+    "pos": "noun",
+    "ipa": "/ˈskedʒuːl/",
+    "meaning_ja": "予定、スケジュール",
+    "meaning_en": "a plan of activities or events",
+    "example_en": "The schedule is attached to this email.",
+    "example_ja": "スケジュールはこのメールに添付されている。",
+    "frequency_rank": 200
+  },
+  {
+    "lemma": "shipment",
+    "pos": "noun",
+    "ipa": "/ˈʃɪpmənt/",
+    "meaning_ja": "出荷、発送、貨物",
+    "meaning_en": "the action of shipping goods; goods being shipped",
+    "example_en": "The shipment arrived two days late.",
+    "example_ja": "荷物は 2 日遅れで到着した。",
+    "frequency_rank": 850
+  },
+  {
+    "lemma": "significant",
+    "pos": "adj",
+    "ipa": "/sɪɡˈnɪfɪkənt/",
+    "meaning_ja": "重要な、著しい",
+    "meaning_en": "important or noticeable",
+    "example_en": "There has been a significant increase in sales.",
+    "example_ja": "売上に著しい増加があった。",
+    "frequency_rank": 250
+  },
+  {
+    "lemma": "streamline",
+    "pos": "verb",
+    "ipa": "/ˈstriːmlaɪn/",
+    "meaning_ja": "合理化する、効率化する",
+    "meaning_en": "to make something more efficient by simplifying it",
+    "example_en": "We streamlined our approval process.",
+    "example_ja": "承認プロセスを合理化した。",
+    "frequency_rank": 2300
+  },
+  {
+    "lemma": "substantial",
+    "pos": "adj",
+    "ipa": "/səbˈstænʃəl/",
+    "meaning_ja": "かなりの、相当な",
+    "meaning_en": "large in amount, size, or number",
+    "example_en": "They made a substantial investment in research.",
+    "example_ja": "彼らは研究に多額の投資をした。",
+    "frequency_rank": 1400
+  },
+  {
+    "lemma": "sustain",
+    "pos": "verb",
+    "ipa": "/səˈsteɪn/",
+    "meaning_ja": "維持する、持続させる",
+    "meaning_en": "to cause something to continue for a period of time",
+    "example_en": "It is hard to sustain this growth rate.",
+    "example_ja": "この成長率を維持するのは難しい。",
+    "frequency_rank": 900
+  },
+  {
+    "lemma": "utilize",
+    "pos": "verb",
+    "ipa": "/ˈjuːtəlaɪz/",
+    "meaning_ja": "利用する、活用する",
+    "meaning_en": "to use something effectively",
+    "example_en": "We should utilize our resources more wisely.",
+    "example_ja": "資源をより賢く活用すべきだ。",
+    "frequency_rank": 1500
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "shipment-delay-notice",
+    "title": "Notice of Shipment Delay",
+    "part": "TOEIC Part 6",
+    "level": "B1",
+    "source": "seed-sample",
+    "language": "en",
+    "body": "Dear Mr. Tanaka,\n\nWe sincerely apologize for the inconvenience caused by the delay of your recent shipment. Due to unexpected customs procedures, the delivery has been delayed by approximately three business days.\n\nWe have coordinated with our logistics partner to expedite the remaining steps, and we now estimate that the shipment will arrive on Thursday. We will confirm the final delivery time by tomorrow morning.\n\nIf you need to adjust your schedule or would like us to prioritize any specific item in the shipment, please get in touch with our customer service team. We are committed to maintaining the service quality you expect and will take every feasible step to prevent similar delays in the future.\n\nThank you for your patience and continued business.\n\nBest regards,\nGlobal Logistics Support"
+  },
+  {
+    "slug": "new-expense-policy",
+    "title": "Updated Expense Reimbursement Policy",
+    "part": "TOEIC Part 6",
+    "level": "B2",
+    "source": "seed-sample",
+    "language": "en",
+    "body": "To all employees,\n\nEffective next Monday, we will implement a revised expense reimbursement policy. The objective of this update is to streamline approval procedures and reimburse valid business expenses within five working days of submission.\n\nEmployees are asked to keep track of every receipt and submit claims through the online portal. The system will automatically evaluate each claim against our guidelines. Any expense exceeding the standard daily limit will be subject to additional review by a department manager.\n\nWe believe these changes will be beneficial for both employees and the finance team. Please take the time to go over the attached guidelines and make sure you are familiar with the new procedure before the effective date. If you have any questions, feel free to inquire at the finance helpdesk.\n\nThank you for your cooperation.\n\nFinance Department"
+  },
+  {
+    "slug": "office-relocation-announcement",
+    "title": "Office Relocation Announcement",
+    "part": "TOEIC Part 7",
+    "level": "B1",
+    "source": "seed-sample",
+    "language": "en",
+    "body": "We are pleased to announce that our headquarters will relocate to a newly renovated building in the central business district on June 1. The new location offers more efficient workspaces, improved meeting facilities, and better access to public transportation.\n\nDuring the transition, it is essential to coordinate moving dates with each department. Team leaders will be in charge of confirming the schedule for their members, and the facilities team will take care of packing and labeling shared equipment.\n\nWe have taken employee commute times and parking requirements into account when selecting the new site. A comprehensive welcome guide, including floor plans and seat assignments, will be distributed next week.\n\nWe look forward to starting this new chapter together and appreciate your continued support as we make this significant change."
+  },
+  {
+    "slug": "product-launch-coordination",
+    "title": "Product Launch Coordination Memo",
+    "part": "TOEIC Part 6",
+    "level": "B2",
+    "source": "seed-sample",
+    "language": "en",
+    "body": "To the product launch team,\n\nOur spring product launch is scheduled for April 22. To ensure a smooth rollout, each team must confirm its deliverables by the end of this week. The marketing team is in charge of the launch campaign and will coordinate messaging across all channels. The support team is responsible for updating the knowledge base and training customer service representatives.\n\nI recommend we go over the final checklist during tomorrow's meeting. Please come up with any outstanding risks, and be prepared to discuss how we will deal with last-minute issues. If we run out of time on any item, we will allocate additional resources after the meeting.\n\nLet's take advantage of this launch to stand out from our competitors and demonstrate how we have streamlined our customer experience.\n\nBest,\nProduct Operations"
+  },
+  {
+    "slug": "conference-invitation",
+    "title": "Invitation: Annual Industry Conference",
+    "part": "TOEIC Part 7",
+    "level": "B1",
+    "source": "seed-sample",
+    "language": "en",
+    "body": "Dear valued partner,\n\nWe are pleased to invite you to our annual industry conference, which will be held on May 15 at the Harbor Convention Center. The event will bring together professionals who are familiar with the latest trends in supply chain optimization, retail technology, and sustainable operations.\n\nThis year's program features a comprehensive mix of keynote sessions, hands-on workshops, and networking events. Participants will have the opportunity to evaluate new tools, negotiate with potential suppliers, and come up with practical ideas they can implement at their own companies.\n\nAttendance is subject to confirmation, as space is limited. Please confirm your participation by April 30 by replying to this message or completing the online form. All travel and accommodation costs for invited speakers will be reimbursed after the event.\n\nWe look forward to seeing you there.\n\nBest regards,\nConference Committee"
+  }
+]

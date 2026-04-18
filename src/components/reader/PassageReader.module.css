@@ -1,0 +1,116 @@
+.passage {
+  font-family: var(--font-source-serif, 'Source Serif 4'), var(--font-noto-serif-jp, 'Noto Serif JP'), Georgia, serif;
+  font-size: 18px;
+  line-height: 1.85;
+  color: light-dark(#1a1a1a, #e8e8e3);
+  max-width: 680px;
+  user-select: text;
+}
+
+.paragraph {
+  margin: 0 0 1.2em 0;
+}
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.token {
+  border-radius: 3px;
+  padding: 0 1px;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.token:focus-visible {
+  outline: 2px solid var(--mantine-color-indigo-6);
+  outline-offset: 2px;
+}
+
+.inDict {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-indigo-1) 65%, transparent),
+    color-mix(in srgb, var(--mantine-color-indigo-9) 45%, transparent)
+  );
+}
+
+.inDict:hover {
+  background-color: light-dark(
+    var(--mantine-color-indigo-2),
+    color-mix(in srgb, var(--mantine-color-indigo-8) 75%, transparent)
+  );
+}
+
+.inIdiom {
+  background: none;
+  border-bottom: 2px dotted light-dark(var(--mantine-color-indigo-6), var(--mantine-color-indigo-4));
+  padding-bottom: 0;
+}
+
+.inIdiom:hover {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-indigo-1) 50%, transparent),
+    color-mix(in srgb, var(--mantine-color-indigo-9) 35%, transparent)
+  );
+}
+
+.saved {
+  background-color: light-dark(
+    var(--mantine-color-teal-1),
+    color-mix(in srgb, var(--mantine-color-teal-9) 50%, transparent)
+  );
+  color: light-dark(var(--mantine-color-teal-9), var(--mantine-color-teal-2));
+}
+
+.saved.inIdiom {
+  border-bottom-color: light-dark(var(--mantine-color-teal-7), var(--mantine-color-teal-3));
+}
+
+/* Unknown (non-dict) words: tappable but subtle */
+.unknown {
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.unknown:hover {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-gray-2) 80%, transparent),
+    color-mix(in srgb, var(--mantine-color-dark-5) 70%, transparent)
+  );
+  border-radius: 3px;
+}
+
+/* Token-aware phrase selection highlight (snaps to word boundaries) */
+.inSelection {
+  background-color: light-dark(
+    var(--mantine-color-indigo-2),
+    color-mix(in srgb, var(--mantine-color-indigo-7) 60%, transparent)
+  );
+  border-radius: 2px;
+}
+
+/* Hide the browser's native selection background inside the passage; our
+   token-aware highlight takes over. */
+.passage ::selection,
+.passage ::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* Dotted outline overlay that groups a selected phrase (one per line) */
+.phraseOutline {
+  position: absolute;
+  border: 2px dashed light-dark(var(--mantine-color-indigo-6), var(--mantine-color-indigo-4));
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 300;
+}
+
+/* Floating action button for text selection */
+.phraseFab {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  z-index: 400;
+  pointer-events: auto;
+}
