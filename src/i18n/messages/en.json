@@ -7,7 +7,32 @@
     "heroTitle": "Grow your vocabulary from real TOEIC/TOEFL passages.",
     "heroBody": "Read authentic English, tap any word or phrase to capture it, and progress from memorization to real sentence production — all in one loop.",
     "ctaStart": "Get started",
-    "ctaLogin": "Sign in"
+    "ctaLogin": "Sign in",
+
+    "featuresLabel": "What it does",
+    "featuresTitle": "Read, capture, and produce — in one loop.",
+    "feat1Title": "Meet vocabulary in context",
+    "feat1Body": "Study from TOEIC/TOEFL-style passages so you encounter words naturally. You can also generate new passages with AI.",
+    "feat2Title": "Tap straight into your list",
+    "feat2Body": "Tap any word or drag-select a phrase to save it. Words not in the dictionary get an instant AI gloss.",
+    "feat3Title": "AI grades your writing",
+    "feat3Body": "Write your own sentence using each item. AI scores grammar, meaning, and naturalness so you never stop at memorization.",
+
+    "flowLabel": "Learning flow",
+    "flowTitle": "Three stages: Memorize → Recognize → Produce",
+    "flowBody": "Don't stop at 'I know it.' Reach 'I can use it.' SM-2 spaced repetition schedules each stage automatically.",
+    "stage1Label": "Stage 1",
+    "stage1Title": "Memorize",
+    "stage1Body": "Classic flashcards to learn meanings and examples.",
+    "stage2Label": "Stage 2",
+    "stage2Title": "Recognize",
+    "stage2Body": "Cloze exercises confirm you can spot the term in real context.",
+    "stage3Label": "Stage 3",
+    "stage3Title": "Produce (AI graded)",
+    "stage3Body": "Write a sentence. AI grades and corrects it. Reaching this stage is how words stick.",
+
+    "ctaTitle": "Start with one passage.",
+    "ctaBody": "Sign in, pick a passage, and tap. Your first saved word is 10 seconds away."
   },
   "nav": {
     "dashboard": "Dashboard",
