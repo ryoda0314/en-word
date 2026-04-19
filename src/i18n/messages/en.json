@@ -37,6 +37,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "read": "Read",
+    "watch": "Watch",
     "vocab": "Vocabulary",
     "review": "Review",
     "drill": "Drill",
@@ -113,6 +114,28 @@
       "errAuth": "Sign in required.",
       "errGeneric": "Generation failed."
     }
+  },
+  "watch": {
+    "title": "Watch",
+    "subtitle": "Save vocabulary from English YouTube subtitles.",
+    "importHeading": "Import a video",
+    "importHint": "Paste a YouTube URL. If English subtitles exist we pull them automatically.",
+    "urlPlaceholder": "e.g., https://www.youtube.com/watch?v=xxxxxxxxxxx",
+    "import": "Import",
+    "openExisting": "Open",
+    "recentHeading": "Recently imported",
+    "recentEmpty": "No videos yet. Paste a URL above to add one.",
+    "cueCount": "{count} cue lines",
+    "tapHint": "Tap a word in a cue to see its meaning and save it. Click a timestamp to jump the player.",
+    "errInvalid": "That URL doesn't look right. Please paste a YouTube link or video ID.",
+    "errNoTranscript": "This video has no English subtitles. Try another one.",
+    "errNotFound": "Video not found. It may be private or deleted.",
+    "errThrottled": "YouTube is rate-limiting our requests. Please try again later.",
+    "errRate": "Too many imports in a short time. Please wait a minute.",
+    "errSave": "Save failed. Please try again.",
+    "errAuth": "Sign in required.",
+    "errApproval": "This app is invite-only. Please wait for approval.",
+    "errGeneric": "Import failed."
   },
   "reader": {
     "saved": "Saved",

@@ -14,8 +14,7 @@ import { AlertCircle, Headphones, Loader2, Pause, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
-import { generateSpeech, type SentenceTiming } from '@/lib/actions/speech';
-import type { Sentence } from '@/lib/text/sentences';
+import { generateSpeech, type WordTimings } from '@/lib/actions/speech';
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
@@ -28,16 +27,26 @@ type Status = 'idle' | 'loading' | 'ready' | 'error' | 'unavailable';
 
 type Props = {
   text: string;
-  sentences?: Sentence[];
-  onRangeChange?: (range: { start: number; end: number } | null) => void;
+  onWordChange?: (wordIndex: number | null) => void;
 };
 
-export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
+/** Find the largest index i where timings[i] <= currentSec. Skips null entries. */
+function findCurrentWord(timings: WordTimings, currentSec: number): number | null {
+  let result: number | null = null;
+  for (let i = 0; i < timings.length; i++) {
+    const t = timings[i];
+    if (t === null) continue;
+    if (t <= currentSec) result = i;
+    else break;
+  }
+  return result;
+}
+
+export function PassageAudioPlayer({ text, onWordChange }: Props) {
   const t = useTranslations('passageAudio');
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const timedSentencesRef = useRef<Sentence[]>([]);
-  const currentSentenceIdxRef = useRef<number>(-1);
-  const serverTimingsRef = useRef<SentenceTiming[] | null>(null);
+  const wordTimingsRef = useRef<WordTimings | null>(null);
+  const currentWordIdxRef = useRef<number | null>(null);
 
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -53,55 +62,21 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
         a.pause();
         a.src = '';
       }
-      onRangeChange?.(null);
+      onWordChange?.(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function computeTimings(totalSec: number) {
-    if (!sentences || sentences.length === 0) {
-      timedSentencesRef.current = [];
+  function updateCurrentWord(timeSec: number) {
+    const timings = wordTimingsRef.current;
+    if (!timings) {
+      onWordChange?.(null);
       return;
     }
-    const server = serverTimingsRef.current;
-    if (server && server.length === sentences.length) {
-      // Exact timings from silence detection on the server.
-      timedSentencesRef.current = sentences.map((s, i) => ({
-        ...s,
-        startSec: server[i].startSec,
-        endSec: server[i].endSec,
-      }));
-      return;
-    }
-    // Fallback: evenly proportional to character length.
-    const totalChars = sentences[sentences.length - 1].charEnd;
-    timedSentencesRef.current = sentences.map((s) => ({
-      ...s,
-      startSec: (s.charStart / totalChars) * totalSec,
-      endSec: (s.charEnd / totalChars) * totalSec,
-    }));
-  }
-
-  function updateCurrentSentence(timeSec: number) {
-    const list = timedSentencesRef.current;
-    if (list.length === 0) {
-      onRangeChange?.(null);
-      return;
-    }
-    let idx = list.findIndex(
-      (s) => timeSec >= (s.startSec ?? 0) && timeSec < (s.endSec ?? 0),
-    );
-    if (idx === -1 && timeSec >= (list[list.length - 1].endSec ?? 0)) {
-      idx = list.length - 1;
-    }
-    if (idx !== currentSentenceIdxRef.current) {
-      currentSentenceIdxRef.current = idx;
-      if (idx >= 0) {
-        const s = list[idx];
-        onRangeChange?.({ start: s.charStart, end: s.charEnd });
-      } else {
-        onRangeChange?.(null);
-      }
+    const idx = findCurrentWord(timings, timeSec);
+    if (idx !== currentWordIdxRef.current) {
+      currentWordIdxRef.current = idx;
+      onWordChange?.(idx);
     }
   }
 
@@ -125,31 +100,25 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
       return null;
     }
 
-    serverTimingsRef.current = result.sentenceTimings ?? null;
+    wordTimingsRef.current = result.wordTimings ?? null;
     const audio = new Audio(result.audioUrl);
     audio.preload = 'auto';
     audio.playbackRate = Number(rate);
 
     audio.addEventListener('loadedmetadata', () => {
-      if (Number.isFinite(audio.duration)) {
-        setDuration(audio.duration);
-        computeTimings(audio.duration);
-      }
+      if (Number.isFinite(audio.duration)) setDuration(audio.duration);
     });
     audio.addEventListener('durationchange', () => {
-      if (Number.isFinite(audio.duration)) {
-        setDuration(audio.duration);
-        computeTimings(audio.duration);
-      }
+      if (Number.isFinite(audio.duration)) setDuration(audio.duration);
     });
     audio.addEventListener('timeupdate', () => {
       setCurrentTime(audio.currentTime);
-      updateCurrentSentence(audio.currentTime);
+      updateCurrentWord(audio.currentTime);
     });
     audio.addEventListener('ended', () => {
       setPlaying(false);
-      currentSentenceIdxRef.current = -1;
-      onRangeChange?.(null);
+      currentWordIdxRef.current = null;
+      onWordChange?.(null);
     });
     audio.addEventListener('pause', () => setPlaying(false));
     audio.addEventListener('play', () => setPlaying(true));
@@ -190,7 +159,7 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
     if (!audio || !Number.isFinite(duration) || duration <= 0) return;
     audio.currentTime = v;
     setCurrentTime(v);
-    updateCurrentSentence(v);
+    updateCurrentWord(v);
   }
 
   function changeRate(v: string) {
@@ -206,11 +175,7 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
       <Group gap="md" wrap="nowrap" align="center">
         <Tooltip
           label={
-            isUnavailable
-              ? t('notConfigured')
-              : playing
-                ? t('pause')
-                : t('play')
+            isUnavailable ? t('notConfigured') : playing ? t('pause') : t('play')
           }
           withArrow
         >
@@ -246,7 +211,6 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
           onChange={handleSeek}
           disabled={status !== 'ready' || duration <= 0}
           label={(v) => formatTime(v)}
-          labelAlwaysOn={false}
         />
 
         <Text

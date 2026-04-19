@@ -1,0 +1,11 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 8px;
+  background: light-dark(#fff, var(--mantine-color-dark-6));
+}

@@ -37,6 +37,7 @@
   "nav": {
     "dashboard": "ダッシュボード",
     "read": "読む",
+    "watch": "動画",
     "vocab": "語彙帳",
     "review": "レビュー",
     "drill": "ドリル",
@@ -113,6 +114,28 @@
       "errAuth": "サインインが必要です。",
       "errGeneric": "生成に失敗しました。"
     }
+  },
+  "watch": {
+    "title": "動画で学ぶ",
+    "subtitle": "YouTube 動画の英語字幕から気になった語句を語彙帳に追加できます。",
+    "importHeading": "動画をインポート",
+    "importHint": "YouTube の URL を貼り付けてください。英語字幕があれば自動で取り込みます。",
+    "urlPlaceholder": "例: https://www.youtube.com/watch?v=xxxxxxxxxxx",
+    "import": "インポート",
+    "openExisting": "開く",
+    "recentHeading": "最近インポートされた動画",
+    "recentEmpty": "まだ動画がありません。上の欄から URL を貼り付けて追加してください。",
+    "cueCount": "{count} 行の字幕",
+    "tapHint": "字幕の単語をタップすると意味が表示され、語彙帳に追加できます。時刻ラベルで該当箇所にジャンプできます。",
+    "errInvalid": "URL が正しくありません。YouTube のリンクか動画 ID を貼り付けてください。",
+    "errNoTranscript": "この動画には英語字幕がありません。別の動画をお試しください。",
+    "errNotFound": "動画が見つかりません。非公開または削除されている可能性があります。",
+    "errThrottled": "YouTube 側からのレート制限を受けました。時間をおいて再試行してください。",
+    "errRate": "短時間に多くのインポートがありました。1 分ほど待って再試行してください。",
+    "errSave": "保存に失敗しました。もう一度お試しください。",
+    "errAuth": "サインインが必要です。",
+    "errApproval": "現在このアプリは招待制です。承認されてからお試しください。",
+    "errGeneric": "インポートに失敗しました。"
   },
   "reader": {
     "saved": "登録済み",

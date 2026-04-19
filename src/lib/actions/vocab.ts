@@ -11,6 +11,8 @@ const schema = z
     customTerm: z.string().min(1).max(100).optional(),
     customMeaningJa: z.string().max(500).optional(),
     passageId: z.string().uuid().optional(),
+    sourceVideoId: z.string().uuid().optional(),
+    sourceVideoCueSeq: z.number().int().min(0).optional(),
     contextSentence: z.string().max(1000).optional(),
   })
   .refine(
@@ -54,6 +56,8 @@ export async function addToVocab(
     customTerm,
     customMeaningJa,
     passageId,
+    sourceVideoId,
+    sourceVideoCueSeq,
     contextSentence,
   } = parsed.data;
 
@@ -86,6 +90,11 @@ export async function addToVocab(
       custom_term: customTerm ?? null,
       custom_meaning_ja: customMeaningJa ?? null,
       source_passage_id: passageId ?? null,
+      // Cast until db:types picks up the new columns from migration 20260419000003.
+      ...({
+        source_video_id: sourceVideoId ?? null,
+        source_video_cue_seq: sourceVideoCueSeq ?? null,
+      } as unknown as Record<string, never>),
       context_sentence: contextSentence ?? null,
     })
     .select('id')

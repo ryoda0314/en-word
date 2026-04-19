@@ -53,7 +53,7 @@ type Props = {
   savedWordIds: string[];
   savedIdiomIds: string[];
   savedCustomTerms: string[];
-  highlightRange?: { start: number; end: number } | null;
+  currentWordTokenId?: number | null;
 };
 
 type AiState =
@@ -108,7 +108,7 @@ export function PassageReader({
   savedWordIds,
   savedIdiomIds,
   savedCustomTerms,
-  highlightRange,
+  currentWordTokenId,
 }: Props) {
   const t = useTranslations('reader');
   const router = useRouter();
@@ -406,24 +406,12 @@ export function PassageReader({
                   phraseSel !== null &&
                   phraseSel.tokenIds.has(prev.id) &&
                   phraseSel.tokenIds.has(next.id);
-                const bridgeReading =
-                  prev?.kind === 'word' &&
-                  next?.kind === 'word' &&
-                  highlightRange != null &&
-                  prev.charStart >= highlightRange.start &&
-                  prev.charEnd <= highlightRange.end &&
-                  next.charStart >= highlightRange.start &&
-                  next.charEnd <= highlightRange.end;
-                const classes = [
-                  bridgeSelected ? styles.inSelection : null,
-                  bridgeReading ? styles.currentlyReading : null,
-                ]
-                  .filter(Boolean)
-                  .join(' ');
                 return (
                   <span
                     key={`t-${pIdx}-${i}`}
-                    className={classes || undefined}
+                    className={
+                      bridgeSelected ? styles.inSelection : undefined
+                    }
                   >
                     {token.text.replace(/\n/g, ' ')}
                   </span>
@@ -454,10 +442,7 @@ export function PassageReader({
                 : extractSentence(body, token.charStart, token.charEnd);
 
               const isInSelection = phraseSel?.tokenIds.has(token.id) ?? false;
-              const isCurrentlyRead =
-                highlightRange != null &&
-                token.charStart >= highlightRange.start &&
-                token.charEnd <= highlightRange.end;
+              const isCurrentlyRead = currentWordTokenId === token.id;
               const className = [
                 styles.token,
                 isDict ? null : styles.unknown,

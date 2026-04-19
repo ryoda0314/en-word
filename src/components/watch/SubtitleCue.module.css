@@ -1,0 +1,93 @@
+.cue {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.cue.active {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-indigo-1) 55%, transparent),
+    color-mix(in srgb, var(--mantine-color-indigo-9) 40%, transparent)
+  );
+  border-color: light-dark(var(--mantine-color-indigo-4), var(--mantine-color-indigo-6));
+}
+
+.timeLabel {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--mantine-font-family-monospace, monospace);
+  font-size: 12px;
+  color: var(--mantine-color-dimmed);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.7;
+  align-self: start;
+}
+
+.timeLabel:hover {
+  color: var(--mantine-color-indigo-6);
+  text-decoration: underline;
+}
+
+.cueText {
+  font-size: 16px;
+  line-height: 1.7;
+  user-select: text;
+  word-spacing: 0.02em;
+}
+
+.token {
+  border-radius: 3px;
+  padding: 0 1px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.token:focus-visible {
+  outline: 2px solid var(--mantine-color-indigo-6);
+  outline-offset: 2px;
+}
+
+.inDict {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-indigo-1) 65%, transparent),
+    color-mix(in srgb, var(--mantine-color-indigo-9) 45%, transparent)
+  );
+}
+
+.inDict:hover {
+  background-color: light-dark(
+    var(--mantine-color-indigo-2),
+    color-mix(in srgb, var(--mantine-color-indigo-8) 75%, transparent)
+  );
+}
+
+.inIdiom {
+  background: none;
+  border-bottom: 2px dotted
+    light-dark(var(--mantine-color-indigo-6), var(--mantine-color-indigo-4));
+}
+
+.unknown {
+  background: none;
+}
+
+.unknown:hover {
+  background-color: light-dark(
+    var(--mantine-color-gray-2),
+    color-mix(in srgb, var(--mantine-color-gray-7) 55%, transparent)
+  );
+}
+
+.saved {
+  outline: 1px dashed
+    light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-5));
+  outline-offset: 1px;
+}

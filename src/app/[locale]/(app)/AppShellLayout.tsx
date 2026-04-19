@@ -25,6 +25,7 @@ import {
   Shield,
   Sun,
   Target,
+  Video,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
@@ -35,6 +36,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 const navItems = [
   { href: '/dashboard', labelKey: 'dashboard', icon: LayoutDashboard },
   { href: '/read', labelKey: 'read', icon: BookOpen },
+  { href: '/watch', labelKey: 'watch', icon: Video },
   { href: '/vocab', labelKey: 'vocab', icon: BookText },
   { href: '/review', labelKey: 'review', icon: Target },
   { href: '/drill', labelKey: 'drill', icon: Dumbbell },

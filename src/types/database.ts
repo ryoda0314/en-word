@@ -333,6 +333,8 @@ export type Database = {
           next_review_at: string
           repetition: number
           source_passage_id: string | null
+          source_video_cue_seq: number | null
+          source_video_id: string | null
           stage: Database["public"]["Enums"]["vocab_stage"]
           user_id: string
           word_id: string | null
@@ -351,6 +353,8 @@ export type Database = {
           next_review_at?: string
           repetition?: number
           source_passage_id?: string | null
+          source_video_cue_seq?: number | null
+          source_video_id?: string | null
           stage?: Database["public"]["Enums"]["vocab_stage"]
           user_id: string
           word_id?: string | null
@@ -369,6 +373,8 @@ export type Database = {
           next_review_at?: string
           repetition?: number
           source_passage_id?: string | null
+          source_video_cue_seq?: number | null
+          source_video_id?: string | null
           stage?: Database["public"]["Enums"]["vocab_stage"]
           user_id?: string
           word_id?: string | null
@@ -386,6 +392,13 @@ export type Database = {
             columns: ["source_passage_id"]
             isOneToOne: false
             referencedRelation: "passages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_vocab_source_video_id_fkey"
+            columns: ["source_video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
             referencedColumns: ["id"]
           },
           {
@@ -421,6 +434,65 @@ export type Database = {
           last_miss_at?: string
           miss_count?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      video_cues: {
+        Row: {
+          end_ms: number
+          id: string
+          seq: number
+          start_ms: number
+          text: string
+          video_id: string
+        }
+        Insert: {
+          end_ms: number
+          id?: string
+          seq: number
+          start_ms: number
+          text: string
+          video_id: string
+        }
+        Update: {
+          end_ms?: number
+          id?: string
+          seq?: number
+          start_ms?: number
+          text?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_cues_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      videos: {
+        Row: {
+          created_at: string
+          id: string
+          lang: string | null
+          title: string | null
+          youtube_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lang?: string | null
+          title?: string | null
+          youtube_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lang?: string | null
+          title?: string | null
+          youtube_id?: string
         }
         Relationships: []
       }
@@ -484,6 +556,8 @@ export type Database = {
           next_review_at: string
           repetition: number
           source_passage_id: string | null
+          source_video_cue_seq: number | null
+          source_video_id: string | null
           stage: Database["public"]["Enums"]["vocab_stage"]
           user_id: string
           word_id: string | null

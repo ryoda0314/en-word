@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
-import { splitSentences } from '@/lib/text/sentences';
 
 const TTS_MODEL = 'gemini-2.5-flash-preview-tts';
 const DEFAULT_VOICE = 'Kore';
@@ -22,13 +21,19 @@ const inputSchema = z.object({
   slow: z.boolean().optional(),
 });
 
-export type SentenceTiming = { startSec: number; endSec: number };
+/**
+ * Word-level timings aligned to the ordered word list of the input text.
+ * `wordTimings[i]` is the start second for the i-th word (non-whitespace,
+ * non-punctuation token). If alignment fails for a given word, the entry is
+ * `null` (client will treat it as "unknown, skip highlight").
+ */
+export type WordTimings = Array<number | null>;
 
 export type SpeechResult =
   | {
       ok: true;
       audioUrl: string;
-      sentenceTimings?: SentenceTiming[];
+      wordTimings?: WordTimings;
       cached: boolean;
     }
   | {
@@ -41,6 +46,16 @@ export type SpeechResult =
         | 'INVALID'
         | 'NOT_CONFIGURED';
     };
+
+const WORD_RE = /\p{L}+(?:[''\-]\p{L}+)*/gu;
+
+function extractWords(text: string): string[] {
+  return Array.from(text.matchAll(WORD_RE), (m) => m[0]);
+}
+
+function normalizeWord(s: string): string {
+  return s.toLowerCase().replace(/[''\-]/g, '').trim();
+}
 
 function sha256Hex(
   text: string,
@@ -122,40 +137,37 @@ async function uploadWav(hash: string, wavBytes: Uint8Array): Promise<boolean> {
   return true;
 }
 
-async function uploadTimings(
+async function uploadWordTimings(
   hash: string,
-  timings: SentenceTiming[],
+  timings: WordTimings,
 ): Promise<void> {
   const service = createSupabaseServiceClient();
   const json = new TextEncoder().encode(JSON.stringify(timings));
   const { error } = await service.storage
     .from(BUCKET)
-    .upload(`${hash}.json`, json as BlobPart, {
+    .upload(`${hash}.words.json`, json as BlobPart, {
       contentType: 'application/json',
       upsert: true,
     });
-  if (error) console.error('[TTS] Timings upload failed:', error.message);
+  if (error) console.error('[TTS] word timings upload failed:', error.message);
 }
 
-async function fetchStoredTimings(
+async function fetchStoredWordTimings(
   hash: string,
-): Promise<SentenceTiming[] | undefined> {
+): Promise<WordTimings | undefined> {
   const service = createSupabaseServiceClient();
-  const { data } = service.storage.from(BUCKET).getPublicUrl(`${hash}.json`);
+  const { data } = service.storage
+    .from(BUCKET)
+    .getPublicUrl(`${hash}.words.json`);
   try {
     const res = await fetch(data.publicUrl, { cache: 'no-store' });
     if (!res.ok) return undefined;
     const json = await res.json();
     if (
       Array.isArray(json) &&
-      json.every(
-        (x) =>
-          x &&
-          typeof x.startSec === 'number' &&
-          typeof x.endSec === 'number',
-      )
+      json.every((x) => x === null || typeof x === 'number')
     ) {
-      return json as SentenceTiming[];
+      return json as WordTimings;
     }
   } catch {
     /* ignore */
@@ -164,100 +176,92 @@ async function fetchStoredTimings(
 }
 
 /**
- * Detect "silence" regions in raw PCM16 little-endian mono audio.
- * Used to locate sentence boundaries in generated narration.
+ * Ask Gemini Flash to give the start time (in seconds) of every spoken word
+ * in the supplied WAV, then align Gemini's output to our own word-token order.
+ * Returns `null` if alignment quality is poor — callers must handle missing
+ * timings gracefully (no highlight).
  */
-function detectSilences(
-  pcm: Uint8Array,
-  sampleRate: number,
-): Array<{ startSec: number; endSec: number; durationSec: number }> {
-  const sampleCount = Math.floor(pcm.length / 2);
-  const windowSize = Math.max(1, Math.floor(sampleRate * 0.02)); // 20ms
-  const hopSize = Math.max(1, Math.floor(sampleRate * 0.01)); // 10ms
-  const silenceThreshold = 450; // RMS amplitude (signed 16-bit range)
-  const minSilenceSec = 0.18;
-
-  const amps: number[] = [];
-  for (let i = 0; i + windowSize < sampleCount; i += hopSize) {
-    let sum = 0;
-    for (let j = 0; j < windowSize; j++) {
-      const idx = (i + j) * 2;
-      const lo = pcm[idx];
-      const hi = pcm[idx + 1];
-      let s = lo | (hi << 8);
-      if (s > 32767) s -= 65536;
-      sum += s * s;
-    }
-    amps.push(Math.sqrt(sum / windowSize));
-  }
-
-  const silences: Array<{
-    startSec: number;
-    endSec: number;
-    durationSec: number;
-  }> = [];
-  let runStart: number | null = null;
-  const pushIfLongEnough = (startIdx: number, endIdx: number) => {
-    const durationSec = ((endIdx - startIdx) * hopSize) / sampleRate;
-    if (durationSec >= minSilenceSec) {
-      silences.push({
-        startSec: (startIdx * hopSize) / sampleRate,
-        endSec: (endIdx * hopSize) / sampleRate,
-        durationSec,
-      });
-    }
-  };
-  for (let i = 0; i < amps.length; i++) {
-    if (amps[i] < silenceThreshold) {
-      if (runStart === null) runStart = i;
-    } else if (runStart !== null) {
-      pushIfLongEnough(runStart, i);
-      runStart = null;
-    }
-  }
-  if (runStart !== null) pushIfLongEnough(runStart, amps.length);
-
-  return silences;
-}
-
-function computeSentenceTimings(
-  pcm: Uint8Array,
-  sampleRate: number,
-  sentenceCount: number,
+async function alignWordTimings(
+  apiKey: string,
+  wavBase64: string,
+  text: string,
   totalDurationSec: number,
-): SentenceTiming[] | null {
-  if (sentenceCount <= 1) {
-    return [{ startSec: 0, endSec: totalDurationSec }];
-  }
+): Promise<WordTimings | null> {
+  const expectedWords = extractWords(text);
+  if (expectedWords.length < 2) return null;
 
-  const allSilences = detectSilences(pcm, sampleRate);
-  // Drop leading/trailing silences — we only care about internal breaks.
-  const internal = allSilences.filter(
-    (s) => s.startSec > 0.12 && s.endSec < totalDurationSec - 0.12,
-  );
+  let parsed: Array<{ word?: string; startSec?: number }>;
+  try {
+    const ai = new GoogleGenAI({ apiKey });
+    const prompt = `Listen to the audio attached. It is a recitation of the following text:
 
-  const needed = sentenceCount - 1;
-  if (internal.length < needed) {
+"${text}"
+
+Return a single JSON array. Each element is {"word": string, "startSec": number}, one entry per word as it occurs in the transcript, in the same order. "startSec" is the time in seconds (decimal, from the start of the audio) when that word begins being spoken. Use the exact surface form of the word as written in the transcript. Include punctuation within the word only if the transcript has it inside the word (e.g., "don't"). Do not output anything other than the JSON array.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              inlineData: {
+                mimeType: 'audio/wav',
+                data: wavBase64,
+              },
+            },
+            { text: prompt },
+          ],
+        },
+      ],
+      config: { responseMimeType: 'application/json' },
+    });
+
+    const raw = (response as { text?: string }).text ?? '';
+    parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+  } catch (err) {
+    console.error('[TTS] Gemini alignment error', err);
     return null;
   }
 
-  const topN = [...internal]
-    .sort((a, b) => b.durationSec - a.durationSec)
-    .slice(0, needed)
-    .sort((a, b) => a.startSec - b.startSec);
-
-  const timings: SentenceTiming[] = [];
-  let prev = 0;
-  for (let i = 0; i < sentenceCount; i++) {
-    // Cut each sentence boundary at the midpoint of the silence after it.
-    const cutSec =
-      i < needed
-        ? (topN[i].startSec + topN[i].endSec) / 2
-        : totalDurationSec;
-    timings.push({ startSec: prev, endSec: cutSec });
-    prev = cutSec;
+  // Sequential alignment with normalized compare.
+  const result: WordTimings = [];
+  let gi = 0;
+  for (const expected of expectedWords) {
+    const target = normalizeWord(expected);
+    let matched: number | null = null;
+    const lookahead = 3;
+    const maxG = Math.min(parsed.length, gi + lookahead);
+    for (let j = gi; j < maxG; j++) {
+      if (normalizeWord(parsed[j].word ?? '') === target) {
+        const t = Number(parsed[j].startSec);
+        if (
+          Number.isFinite(t) &&
+          t >= 0 &&
+          t <= totalDurationSec + 0.5
+        ) {
+          matched = t;
+        }
+        gi = j + 1;
+        break;
+      }
+    }
+    result.push(matched);
   }
-  return timings;
+
+  // Validate: at least 70% of tokens must have a usable timing, and they
+  // must be monotonically non-decreasing.
+  const matched = result.filter((t) => t !== null).length;
+  if (matched / result.length < 0.7) return null;
+  let last = -Infinity;
+  for (const t of result) {
+    if (t === null) continue;
+    if (t < last - 0.2) return null; // allow tiny jitter
+    last = t;
+  }
+  return result;
 }
 
 export async function generateSpeech(
@@ -285,13 +289,39 @@ export async function generateSpeech(
   const hash = sha256Hex(text.trim(), voice, languageCode, slow);
   const publicUrl = getPublicUrl(hash);
 
-  // Storage cache: if the file already exists, skip Gemini entirely.
+  // Storage cache: if the file already exists, skip Gemini TTS entirely.
   if (await urlExists(publicUrl)) {
-    const timings = await fetchStoredTimings(hash);
+    let timings = await fetchStoredWordTimings(hash);
+    // Backfill: if audio was generated before word-alignment was added, try
+    // to align now using the cached WAV.
+    if (!timings) {
+      try {
+        const res = await fetch(publicUrl, { cache: 'no-store' });
+        if (res.ok) {
+          const wavBuf = Buffer.from(await res.arrayBuffer());
+          // Crude total duration: parse WAV header (bytes 40..44).
+          const dataSize = wavBuf.readUInt32LE(40);
+          const sampleRate = wavBuf.readUInt32LE(24);
+          const totalSec = dataSize / 2 / sampleRate;
+          const backfilled = await alignWordTimings(
+            apiKey,
+            wavBuf.toString('base64'),
+            text.trim(),
+            totalSec,
+          );
+          if (backfilled) {
+            await uploadWordTimings(hash, backfilled);
+            timings = backfilled;
+          }
+        }
+      } catch (err) {
+        console.error('[TTS] Backfill alignment failed', err);
+      }
+    }
     return {
       ok: true,
       audioUrl: publicUrl,
-      sentenceTimings: timings,
+      wordTimings: timings,
       cached: true,
     };
   }
@@ -345,27 +375,31 @@ export async function generateSpeech(
       return { ok: false, error: 'TTS_FAILED' };
     }
 
-    // Compute per-sentence timings via silence detection and persist them.
-    let timings: SentenceTiming[] | undefined;
-    if (isPcm16(mimeType)) {
-      const totalDurationSec = rawBytes.length / 2 / sampleRate;
-      const sentences = splitSentences(text.trim());
-      const detected = computeSentenceTimings(
-        rawBytes,
-        sampleRate,
-        sentences.length,
+    // Ask Gemini Flash to word-align the recording back to the text.
+    const wavBase64 = Buffer.from(wavBytes).toString('base64');
+    const totalDurationSec = isPcm16(mimeType)
+      ? rawBytes.length / 2 / sampleRate
+      : 0;
+    let wordTimings: WordTimings | undefined;
+    try {
+      const aligned = await alignWordTimings(
+        apiKey,
+        wavBase64,
+        text.trim(),
         totalDurationSec,
       );
-      if (detected) {
-        timings = detected;
-        await uploadTimings(hash, detected);
+      if (aligned) {
+        wordTimings = aligned;
+        await uploadWordTimings(hash, aligned);
       }
+    } catch (err) {
+      console.error('[TTS] Alignment skipped', err);
     }
 
     return {
       ok: true,
       audioUrl: publicUrl,
-      sentenceTimings: timings,
+      wordTimings,
       cached: false,
     };
   } catch (err) {
