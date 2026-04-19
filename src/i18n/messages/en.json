@@ -353,6 +353,8 @@
     "saved": "Saved",
     "account": "Account",
     "displayName": "Display name",
+    "displayNameDesc": "Used in greetings on the dashboard.",
+    "displayNamePlaceholder": "e.g., Alex",
     "email": "Email"
   }
 }

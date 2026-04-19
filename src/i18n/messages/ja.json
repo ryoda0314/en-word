@@ -353,6 +353,8 @@
     "saved": "保存しました",
     "account": "アカウント",
     "displayName": "表示名",
+    "displayNameDesc": "ダッシュボードの挨拶などで表示されます。",
+    "displayNamePlaceholder": "例: えだまめ",
     "email": "メールアドレス"
   }
 }

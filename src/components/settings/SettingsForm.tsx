@@ -43,6 +43,7 @@ export function SettingsForm({
   const tCommon = useTranslations('common');
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [nameValue, setNameValue] = useState<string>(displayName ?? '');
   const [uiLocale, setUiLocale] = useState<Locale>(initialUiLocale);
   const [meaningLocale, setMeaningLocale] = useState<MeaningLocale>(initialMeaningLocale);
   const [dailyGoal, setDailyGoal] = useState<number>(initialDailyGoal);
@@ -51,6 +52,7 @@ export function SettingsForm({
   function handleSave() {
     startTransition(async () => {
       const result = await updateProfile({
+        display_name: nameValue.trim(),
         ui_locale: uiLocale,
         meaning_locale: meaningLocale,
         daily_goal: dailyGoal,
@@ -147,9 +149,14 @@ export function SettingsForm({
       <Card withBorder radius="md" p="lg">
         <Stack gap="md">
           <Text fw={600}>{t('account')}</Text>
-          {displayName ? (
-            <TextInput label={t('displayName')} value={displayName} readOnly />
-          ) : null}
+          <TextInput
+            label={t('displayName')}
+            description={t('displayNameDesc')}
+            placeholder={t('displayNamePlaceholder')}
+            value={nameValue}
+            onChange={(e) => setNameValue(e.currentTarget.value)}
+            maxLength={60}
+          />
           {userEmail ? (
             <TextInput label={t('email')} value={userEmail} readOnly />
           ) : null}

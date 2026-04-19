@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const schema = z.object({
+  display_name: z.string().max(60).nullable().optional(),
   ui_locale: z.enum(['ja', 'en']).optional(),
   meaning_locale: z.enum(['ja', 'en', 'both']).optional(),
   daily_goal: z.number().int().min(1).max(200).optional(),
@@ -26,6 +27,13 @@ export async function updateProfile(
     return { ok: true };
   }
 
+  // Normalize display_name: empty/whitespace → null so the DB stores NULL.
+  const payload = { ...parsed.data };
+  if (payload.display_name !== undefined) {
+    const trimmed = payload.display_name?.trim();
+    payload.display_name = trimmed && trimmed.length > 0 ? trimmed : null;
+  }
+
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -37,7 +45,7 @@ export async function updateProfile(
   const { error } = await supabase.from('profiles').upsert(
     {
       user_id: user.id,
-      ...parsed.data,
+      ...payload,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id' },
