@@ -138,6 +138,7 @@ export function TickerClient({ cards }: { cards: TickerCard[] }) {
   const [shuffle, setShuffle] = useState(true);
   const [paused, setPaused] = useState(false);
   const [index, setIndex] = useState(0);
+  const [revealed, setRevealed] = useState(false);
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
   const [pipSupported, setPipSupported] = useState(false);
   const [pipError, setPipError] = useState<string | null>(null);
@@ -158,6 +159,12 @@ export function TickerClient({ cards }: { cards: TickerCard[] }) {
     setIndex(0);
   }, [source, shuffle]);
 
+  // Reset reveal state on each new card.
+  useEffect(() => {
+    setRevealed(false);
+  }, [index]);
+
+  // Auto-advance between cards.
   useEffect(() => {
     if (paused || activeCards.length <= 1) return;
     const id = window.setInterval(
@@ -168,6 +175,14 @@ export function TickerClient({ cards }: { cards: TickerCard[] }) {
     );
     return () => window.clearInterval(id);
   }, [paused, intervalSec, activeCards.length]);
+
+  // Reveal the meaning partway through each card's interval.
+  useEffect(() => {
+    if (paused || revealed) return;
+    const halfway = Number(intervalSec) * 500; // ms
+    const id = window.setTimeout(() => setRevealed(true), halfway);
+    return () => window.clearTimeout(id);
+  }, [index, paused, intervalSec, revealed]);
 
   const current = activeCards.length > 0 ? activeCards[index % activeCards.length] : null;
 
@@ -180,6 +195,7 @@ export function TickerClient({ cards }: { cards: TickerCard[] }) {
     setIndex((i) => (i + 1) % activeCards.length);
   }, [activeCards.length]);
   const togglePause = useCallback(() => setPaused((p) => !p), []);
+  const reveal = useCallback(() => setRevealed(true), []);
 
   async function openPip() {
     setPipError(null);
@@ -250,11 +266,13 @@ export function TickerClient({ cards }: { cards: TickerCard[] }) {
       card={current}
       detail={detail}
       paused={paused}
+      revealed={revealed}
       index={index}
       total={activeCards.length}
       onPrev={prev}
       onNext={next}
       onPauseToggle={togglePause}
+      onReveal={reveal}
       compact={pipWindow !== null}
     />
   ) : (
@@ -397,21 +415,25 @@ function TickerView({
   card,
   detail,
   paused,
+  revealed,
   index,
   total,
   onPrev,
   onNext,
   onPauseToggle,
+  onReveal,
   compact,
 }: {
   card: TickerCard;
   detail: Detail;
   paused: boolean;
+  revealed: boolean;
   index: number;
   total: number;
   onPrev: () => void;
   onNext: () => void;
   onPauseToggle: () => void;
+  onReveal: () => void;
   compact: boolean;
 }) {
   const t = useTranslations('ticker');
@@ -432,52 +454,80 @@ function TickerView({
         width: '100%',
       }}
     >
-      <Stack gap={4} align="center" style={{ flex: 1, justifyContent: 'center' }}>
-        <Group gap={6} wrap="wrap" justify="center">
-          {pos ? (
-            <Badge size="xs" variant="default">
-              {pos}
-            </Badge>
-          ) : null}
-          {ipa ? (
-            <Text size="xs" c="dimmed" ff="monospace">
-              {ipa}
+      <div
+        onClick={() => {
+          if (!revealed) onReveal();
+        }}
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: revealed ? 'default' : 'pointer',
+          userSelect: 'none',
+        }}
+        role={revealed ? undefined : 'button'}
+        aria-label={revealed ? undefined : t('tapToReveal')}
+      >
+        <Stack gap={4} align="center">
+          <Group gap={6} wrap="wrap" justify="center">
+            {pos ? (
+              <Badge size="xs" variant="default">
+                {pos}
+              </Badge>
+            ) : null}
+            {ipa ? (
+              <Text size="xs" c="dimmed" ff="monospace">
+                {ipa}
+              </Text>
+            ) : null}
+            <Text c="dimmed" size="xs">
+              {index + 1} / {total}
             </Text>
-          ) : null}
-          <Text c="dimmed" size="xs">
-            {index + 1} / {total}
-          </Text>
-        </Group>
-        <Group gap="xs" justify="center" align="center">
-          <Title
-            order={2}
-            ta="center"
-            fz={compact ? 24 : 32}
-            lh={1.15}
-            style={{ wordBreak: 'break-word' }}
-          >
-            {name}
-          </Title>
-          {name ? <PlayButton text={name} size={18} variant="light" /> : null}
-        </Group>
-        {meaning ? (
-          <Text ta="center" size={compact ? 'sm' : 'md'} c="dimmed">
-            {meaning}
-          </Text>
-        ) : null}
-        {detail === 'full' && example ? (
-          <Text
-            ta="center"
-            size="xs"
-            fs="italic"
-            c="dimmed"
-            mt={4}
-            style={{ wordBreak: 'break-word' }}
-          >
-            {example}
-          </Text>
-        ) : null}
-      </Stack>
+          </Group>
+          <Group gap="xs" justify="center" align="center">
+            <Title
+              order={2}
+              ta="center"
+              fz={compact ? 24 : 32}
+              lh={1.15}
+              style={{ wordBreak: 'break-word' }}
+            >
+              {name}
+            </Title>
+            {name ? (
+              <div onClick={(e) => e.stopPropagation()}>
+                <PlayButton text={name} size={18} variant="light" />
+              </div>
+            ) : null}
+          </Group>
+          {revealed ? (
+            <>
+              {meaning ? (
+                <Text ta="center" size={compact ? 'sm' : 'md'} c="dimmed">
+                  {meaning}
+                </Text>
+              ) : null}
+              {detail === 'full' && example ? (
+                <Text
+                  ta="center"
+                  size="xs"
+                  fs="italic"
+                  c="dimmed"
+                  mt={4}
+                  style={{ wordBreak: 'break-word' }}
+                >
+                  {example}
+                </Text>
+              ) : null}
+            </>
+          ) : (
+            <Text c="dimmed" size="xs" mt={4}>
+              {t('tapToReveal')}
+            </Text>
+          )}
+        </Stack>
+      </div>
       <Group justify="center" gap="xs" mt={compact ? 4 : 'sm'}>
         <ActionIcon
           variant="subtle"

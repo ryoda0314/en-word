@@ -331,7 +331,8 @@
     "prev": "前へ",
     "next": "次へ",
     "pause": "一時停止",
-    "play": "再生"
+    "play": "再生",
+    "tapToReveal": "タップで意味を表示"
   },
   "settings": {
     "title": "設定",

@@ -331,7 +331,8 @@
     "prev": "Prev",
     "next": "Next",
     "pause": "Pause",
-    "play": "Play"
+    "play": "Play",
+    "tapToReveal": "Tap to reveal"
   },
   "settings": {
     "title": "Settings",
