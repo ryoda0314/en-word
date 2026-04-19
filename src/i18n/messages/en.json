@@ -217,23 +217,34 @@
     "title": "Dashboard",
     "subtitle": "Today's learning and progress",
     "days": "days",
+    "of": "/ {n}",
+    "greeting": "Welcome back",
+    "greetingWithName": "Welcome back, {name}",
+    "streakLabel": "{count}-day streak",
+    "todaysWork": "Today's work",
+    "reviewHeadline": "{count} cards due for review",
+    "allCaughtUpHeadline": "All caught up 🌿",
+    "goalProgress": "{done} of {goal} done today",
+    "startReview": "Start review",
+    "keepReading": "Keep reading",
+    "drillCta": "Drill {count}",
     "stats": {
       "dueToday": "Due today",
-      "streak": "Day streak",
-      "totalVocab": "Total vocab",
-      "mastered": "Mastered"
+      "streak": "Streak",
+      "totalVocab": "Total",
+      "mastered": "Mastered",
+      "doneToday": "Done today"
     },
-    "actions": {
-      "reviewTitle": "Review",
-      "reviewBody": "{count} cards are due for review.",
-      "reviewAllClear": "No cards are due right now.",
-      "startReview": "Start review",
-      "allClear": "Done for today",
-      "drillTitle": "Weak-spot drill",
-      "drillBody": "{count} items have lapses you can practice.",
-      "drillEmpty": "No lapsed items to drill.",
-      "startDrill": "Start drill",
-      "noDrill": "Nothing to drill"
+    "distribution": {
+      "title": "Stage distribution",
+      "totalSuffix": "{count} total",
+      "empty": "No items yet."
+    },
+    "activity": {
+      "title": "Last 14 days",
+      "range": "through today",
+      "less": "less",
+      "more": "more"
     },
     "recent": {
       "title": "Recently saved",

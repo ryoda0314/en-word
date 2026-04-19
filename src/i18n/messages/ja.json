@@ -217,23 +217,34 @@
     "title": "ダッシュボード",
     "subtitle": "今日の学習と進捗",
     "days": "日",
+    "of": "/ {n}",
+    "greeting": "おかえりなさい",
+    "greetingWithName": "おかえりなさい、{name} さん",
+    "streakLabel": "{count} 日連続",
+    "todaysWork": "今日の学習",
+    "reviewHeadline": "{count} 件のレビューが待っています",
+    "allCaughtUpHeadline": "今日は完了です 🌿",
+    "goalProgress": "今日 {done} / {goal} 件完了",
+    "startReview": "レビューを始める",
+    "keepReading": "長文を読む",
+    "drillCta": "弱点 {count} 件",
     "stats": {
       "dueToday": "今日のレビュー",
       "streak": "連続日数",
       "totalVocab": "登録語句",
-      "mastered": "定着済み"
+      "mastered": "定着",
+      "doneToday": "今日完了"
     },
-    "actions": {
-      "reviewTitle": "レビュー",
-      "reviewBody": "期限が来たカードが {count} 件あります。",
-      "reviewAllClear": "期限のカードはありません。",
-      "startReview": "レビューを始める",
-      "allClear": "今日は完了",
-      "drillTitle": "弱点ドリル",
-      "drillBody": "過去に間違えた語句が {count} 件あります。",
-      "drillEmpty": "今のところ要再学習の語句はありません。",
-      "startDrill": "ドリルを始める",
-      "noDrill": "対象なし"
+    "distribution": {
+      "title": "ステージ分布",
+      "totalSuffix": "合計 {count}",
+      "empty": "まだ語句が登録されていません。"
+    },
+    "activity": {
+      "title": "直近 14 日のレビュー",
+      "range": "今日まで",
+      "less": "少",
+      "more": "多"
     },
     "recent": {
       "title": "最近登録した語句",
