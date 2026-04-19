@@ -10,6 +10,7 @@ import {
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { PlayButton } from '@/components/common/PlayButton';
 import { StageBadge } from '@/components/vocab/StageBadge';
 import { VocabDetailActions } from '@/components/vocab/VocabDetailActions';
 import { Link } from '@/i18n/navigation';
@@ -116,9 +117,12 @@ export default async function VocabDetailPage({
               </Text>
             ) : null}
           </Group>
-          <Title order={1} size={32} lh={1.2}>
-            {displayName}
-          </Title>
+          <Group gap="xs" align="center">
+            <Title order={1} size={32} lh={1.2}>
+              {displayName}
+            </Title>
+            {displayName ? <PlayButton text={displayName} size={20} variant="light" /> : null}
+          </Group>
         </Stack>
         <VocabDetailActions id={row.id} locale={locale} displayName={displayName} />
       </Group>

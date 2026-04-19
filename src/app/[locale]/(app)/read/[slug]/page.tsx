@@ -2,7 +2,7 @@ import { Badge, Container, Group, Stack, Text, Title } from '@mantine/core';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { PassageReader } from '@/components/reader/PassageReader';
+import { PassageWithAudio } from '@/components/reader/PassageWithAudio';
 import { tokenizePassage } from '@/lib/text/tokenize';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { IdiomRow, WordRow } from '@/types/db';
@@ -116,7 +116,7 @@ export default async function PassagePage({
           </Text>
         </Stack>
 
-        <PassageReader
+        <PassageWithAudio
           passageId={passage.id}
           tokens={tokens}
           idiomSpans={idiomSpans}

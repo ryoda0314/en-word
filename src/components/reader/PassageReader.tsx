@@ -35,6 +35,7 @@ import {
   useTransition,
 } from 'react';
 
+import { PlayButton } from '@/components/common/PlayButton';
 import { type GlossData, lookupGloss } from '@/lib/actions/gloss';
 import { addToVocab } from '@/lib/actions/vocab';
 import type { IdiomSpan, PassageToken } from '@/lib/text/tokenize';
@@ -52,6 +53,7 @@ type Props = {
   savedWordIds: string[];
   savedIdiomIds: string[];
   savedCustomTerms: string[];
+  highlightRange?: { start: number; end: number } | null;
 };
 
 type AiState =
@@ -106,6 +108,7 @@ export function PassageReader({
   savedWordIds,
   savedIdiomIds,
   savedCustomTerms,
+  highlightRange,
 }: Props) {
   const t = useTranslations('reader');
   const router = useRouter();
@@ -403,10 +406,24 @@ export function PassageReader({
                   phraseSel !== null &&
                   phraseSel.tokenIds.has(prev.id) &&
                   phraseSel.tokenIds.has(next.id);
+                const bridgeReading =
+                  prev?.kind === 'word' &&
+                  next?.kind === 'word' &&
+                  highlightRange != null &&
+                  prev.charStart >= highlightRange.start &&
+                  prev.charEnd <= highlightRange.end &&
+                  next.charStart >= highlightRange.start &&
+                  next.charEnd <= highlightRange.end;
+                const classes = [
+                  bridgeSelected ? styles.inSelection : null,
+                  bridgeReading ? styles.currentlyReading : null,
+                ]
+                  .filter(Boolean)
+                  .join(' ');
                 return (
                   <span
                     key={`t-${pIdx}-${i}`}
-                    className={bridgeSelected ? styles.inSelection : undefined}
+                    className={classes || undefined}
                   >
                     {token.text.replace(/\n/g, ' ')}
                   </span>
@@ -437,6 +454,10 @@ export function PassageReader({
                 : extractSentence(body, token.charStart, token.charEnd);
 
               const isInSelection = phraseSel?.tokenIds.has(token.id) ?? false;
+              const isCurrentlyRead =
+                highlightRange != null &&
+                token.charStart >= highlightRange.start &&
+                token.charEnd <= highlightRange.end;
               const className = [
                 styles.token,
                 isDict ? null : styles.unknown,
@@ -444,6 +465,7 @@ export function PassageReader({
                 idiom ? styles.inIdiom : null,
                 isSaved ? styles.saved : null,
                 isInSelection ? styles.inSelection : null,
+                isCurrentlyRead ? styles.currentlyReading : null,
               ]
                 .filter(Boolean)
                 .join(' ');
@@ -637,10 +659,11 @@ function WordCard({
   const t = useTranslations('reader');
   return (
     <Stack gap="xs">
-      <Group gap={6} wrap="wrap">
+      <Group gap={6} wrap="wrap" align="center">
         <Text fw={700} fz="lg">
           {word.lemma}
         </Text>
+        <PlayButton text={word.lemma} size={14} />
         {word.pos ? (
           <Badge size="xs" variant="default">
             {word.pos}
@@ -713,13 +736,14 @@ function IdiomCard({
   const t = useTranslations('reader');
   return (
     <Stack gap="xs">
-      <Group gap={6} wrap="wrap">
+      <Group gap={6} wrap="wrap" align="center">
         <Badge size="xs" color="indigo" variant="light">
           {t('idiomBadge')}
         </Badge>
         <Text fw={700} fz="md">
           {idiom.phrase}
         </Text>
+        <PlayButton text={idiom.phrase} size={14} />
       </Group>
       {idiom.meaning_ja ? <Text size="sm">{idiom.meaning_ja}</Text> : null}
       {idiom.meaning_en ? (
@@ -829,10 +853,11 @@ function AiWordCard({
   const gloss = state.data;
   return (
     <Stack gap="xs">
-      <Group gap={6} wrap="wrap">
+      <Group gap={6} wrap="wrap" align="center">
         <Text fw={700} fz="lg">
           {gloss.headword}
         </Text>
+        <PlayButton text={gloss.headword} size={14} />
         {gloss.pos ? (
           <Badge size="xs" variant="default">
             {gloss.pos}

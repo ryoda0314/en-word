@@ -17,5 +17,10 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  // Skip API, Next.js internals, Vercel preview routes, dynamic/static metadata
+  // files (icon, apple-icon, robots, sitemap, manifest.webmanifest…), and any
+  // path containing a dot (files with extensions).
+  matcher: [
+    '/((?!api|_next|_vercel|icon|apple-icon|robots|sitemap|opengraph-image|twitter-image|.*\\..*).*)',
+  ],
 };

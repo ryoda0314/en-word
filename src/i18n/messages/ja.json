@@ -40,6 +40,7 @@
     "vocab": "語彙帳",
     "review": "レビュー",
     "drill": "ドリル",
+    "ticker": "ティッカー",
     "settings": "設定",
     "admin": "管理"
   },
@@ -47,6 +48,21 @@
     "loading": "読み込み中…",
     "signIn": "サインイン",
     "signOut": "サインアウト"
+  },
+  "audio": {
+    "play": "発音を聞く",
+    "playSlow": "ゆっくり聞く",
+    "playing": "再生中…",
+    "failed": "再生に失敗",
+    "unavailable": "発音再生は未設定（GEMINI_API_KEY 未登録）"
+  },
+  "passageAudio": {
+    "play": "再生",
+    "pause": "一時停止",
+    "hint": "本文全体を AI 音声で読み上げます。初回は数秒〜10 秒ほど生成に時間がかかります（2 回目以降はキャッシュから即再生）。",
+    "failed": "音声の生成に失敗しました。もう一度お試しください。",
+    "rateLimited": "短時間に多くの呼び出しがありました。1 分ほど待って再試行してください。",
+    "notConfigured": "音声機能は未設定です（GEMINI_API_KEY / GOOGLE_API_KEY 未登録）。"
   },
   "auth": {
     "title": "en-word-book へようこそ",
@@ -284,6 +300,38 @@
     "howToRequest": "このメールアドレスを管理者に伝えて、allowlist への追加を依頼してください。追加が済んだら「再確認」を押すとダッシュボードへ進めます。",
     "recheck": "再確認",
     "signOut": "サインアウト"
+  },
+  "ticker": {
+    "title": "単語ティッカー",
+    "subtitle": "語彙帳を一定間隔で流します。PC の端に小窓で置いておくと、作業しながら自然と目に入れられます。",
+    "settings": "設定",
+    "sourceLabel": "流すもの",
+    "sourceDesc": "どの語句を順に出すかを選びます。",
+    "src": {
+      "all": "すべて",
+      "due": "期限到来のみ",
+      "notMastered": "定着以外（既定）",
+      "lapsed": "要再学習（過去に間違えたもの）",
+      "recent": "最近登録した 30 件"
+    },
+    "intervalLabel": "切替間隔",
+    "intervalDesc": "次のカードに進むまでの秒数。",
+    "every": "{n} 秒ごと",
+    "detailMin": "単語 + 意味",
+    "detailFull": "+ 例文",
+    "shuffle": "ランダム順",
+    "count": "対象 {count} 件",
+    "openPip": "PiP 小窓で開く",
+    "closePip": "PiP を閉じる",
+    "pipHint": "別ウィンドウで常に最前面に表示されます（Chrome/Edge/Arc 対応）。",
+    "pipUnsupported": "お使いのブラウザは Document Picture-in-Picture に未対応です。タブを手動で縮めて端に配置してください。",
+    "pipFailed": "PiP の起動に失敗しました。もう一度試してください。",
+    "playingInPip": "別ウィンドウで再生中",
+    "empty": "対象の語句がありません。フィルタを変えるか、語彙を増やしてください。",
+    "prev": "前へ",
+    "next": "次へ",
+    "pause": "一時停止",
+    "play": "再生"
   },
   "settings": {
     "title": "設定",

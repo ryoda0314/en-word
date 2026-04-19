@@ -63,6 +63,15 @@
   color: light-dark(var(--mantine-color-teal-9), var(--mantine-color-teal-2));
 }
 
+/* Sentence being read aloud by the passage audio player */
+.currentlyReading {
+  background-color: light-dark(
+    color-mix(in srgb, var(--mantine-color-yellow-2) 75%, transparent),
+    color-mix(in srgb, var(--mantine-color-yellow-8) 40%, transparent)
+  ) !important;
+  transition: background-color 300ms ease;
+}
+
 .saved.inIdiom {
   border-bottom-color: light-dark(var(--mantine-color-teal-7), var(--mantine-color-teal-3));
 }

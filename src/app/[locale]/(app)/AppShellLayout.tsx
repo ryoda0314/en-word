@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
   LogOut,
   Moon,
+  PictureInPicture2,
   Settings,
   Shield,
   Sun,
@@ -37,6 +38,7 @@ const navItems = [
   { href: '/vocab', labelKey: 'vocab', icon: BookText },
   { href: '/review', labelKey: 'review', icon: Target },
   { href: '/drill', labelKey: 'drill', icon: Dumbbell },
+  { href: '/ticker', labelKey: 'ticker', icon: PictureInPicture2 },
   { href: '/settings', labelKey: 'settings', icon: Settings },
 ] as const;
 

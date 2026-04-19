@@ -40,6 +40,7 @@
     "vocab": "Vocabulary",
     "review": "Review",
     "drill": "Drill",
+    "ticker": "Ticker",
     "settings": "Settings",
     "admin": "Admin"
   },
@@ -47,6 +48,21 @@
     "loading": "Loading…",
     "signIn": "Sign in",
     "signOut": "Sign out"
+  },
+  "audio": {
+    "play": "Play pronunciation",
+    "playSlow": "Play slowly",
+    "playing": "Playing…",
+    "failed": "Playback failed",
+    "unavailable": "Playback unavailable (GEMINI_API_KEY not set)"
+  },
+  "passageAudio": {
+    "play": "Play",
+    "pause": "Pause",
+    "hint": "Narrate the whole passage with AI. The first play takes a few seconds to generate; subsequent plays are instant from cache.",
+    "failed": "Audio generation failed. Please retry.",
+    "rateLimited": "Too many requests in a short time. Please wait a minute.",
+    "notConfigured": "Audio playback is not configured (GEMINI_API_KEY / GOOGLE_API_KEY not set)."
   },
   "auth": {
     "title": "Welcome to en-word-book",
@@ -284,6 +300,38 @@
     "howToRequest": "Share your email with the admin and ask to be added to the allowlist. Press Recheck once you've been approved.",
     "recheck": "Recheck",
     "signOut": "Sign out"
+  },
+  "ticker": {
+    "title": "Vocabulary ticker",
+    "subtitle": "Stream your vocabulary at a fixed interval. Park it in a corner to let items sink in passively.",
+    "settings": "Settings",
+    "sourceLabel": "Source",
+    "sourceDesc": "Which items to cycle through.",
+    "src": {
+      "all": "All",
+      "due": "Due only",
+      "notMastered": "Not mastered (default)",
+      "lapsed": "Struggling items",
+      "recent": "Recent 30"
+    },
+    "intervalLabel": "Interval",
+    "intervalDesc": "Seconds between cards.",
+    "every": "every {n}s",
+    "detailMin": "Word + meaning",
+    "detailFull": "+ example",
+    "shuffle": "Shuffle",
+    "count": "{count} items",
+    "openPip": "Open in PiP",
+    "closePip": "Close PiP",
+    "pipHint": "Shows in a separate always-on-top window (Chrome / Edge / Arc).",
+    "pipUnsupported": "Your browser doesn't support Document Picture-in-Picture. Please resize the tab manually instead.",
+    "pipFailed": "Couldn't open PiP. Please try again.",
+    "playingInPip": "Playing in a separate window",
+    "empty": "No items match. Change the filter or add more vocabulary.",
+    "prev": "Prev",
+    "next": "Next",
+    "pause": "Pause",
+    "play": "Play"
   },
   "settings": {
     "title": "Settings",
