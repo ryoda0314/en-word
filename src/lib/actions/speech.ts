@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
+import { splitSentences } from '@/lib/text/sentences';
 
 const TTS_MODEL = 'gemini-2.5-flash-preview-tts';
 const DEFAULT_VOICE = 'Kore';
@@ -21,8 +22,15 @@ const inputSchema = z.object({
   slow: z.boolean().optional(),
 });
 
+export type SentenceTiming = { startSec: number; endSec: number };
+
 export type SpeechResult =
-  | { ok: true; audioUrl: string; cached: boolean }
+  | {
+      ok: true;
+      audioUrl: string;
+      sentenceTimings?: SentenceTiming[];
+      cached: boolean;
+    }
   | {
       ok: false;
       error:
@@ -114,6 +122,144 @@ async function uploadWav(hash: string, wavBytes: Uint8Array): Promise<boolean> {
   return true;
 }
 
+async function uploadTimings(
+  hash: string,
+  timings: SentenceTiming[],
+): Promise<void> {
+  const service = createSupabaseServiceClient();
+  const json = new TextEncoder().encode(JSON.stringify(timings));
+  const { error } = await service.storage
+    .from(BUCKET)
+    .upload(`${hash}.json`, json as BlobPart, {
+      contentType: 'application/json',
+      upsert: true,
+    });
+  if (error) console.error('[TTS] Timings upload failed:', error.message);
+}
+
+async function fetchStoredTimings(
+  hash: string,
+): Promise<SentenceTiming[] | undefined> {
+  const service = createSupabaseServiceClient();
+  const { data } = service.storage.from(BUCKET).getPublicUrl(`${hash}.json`);
+  try {
+    const res = await fetch(data.publicUrl, { cache: 'no-store' });
+    if (!res.ok) return undefined;
+    const json = await res.json();
+    if (
+      Array.isArray(json) &&
+      json.every(
+        (x) =>
+          x &&
+          typeof x.startSec === 'number' &&
+          typeof x.endSec === 'number',
+      )
+    ) {
+      return json as SentenceTiming[];
+    }
+  } catch {
+    /* ignore */
+  }
+  return undefined;
+}
+
+/**
+ * Detect "silence" regions in raw PCM16 little-endian mono audio.
+ * Used to locate sentence boundaries in generated narration.
+ */
+function detectSilences(
+  pcm: Uint8Array,
+  sampleRate: number,
+): Array<{ startSec: number; endSec: number; durationSec: number }> {
+  const sampleCount = Math.floor(pcm.length / 2);
+  const windowSize = Math.max(1, Math.floor(sampleRate * 0.02)); // 20ms
+  const hopSize = Math.max(1, Math.floor(sampleRate * 0.01)); // 10ms
+  const silenceThreshold = 450; // RMS amplitude (signed 16-bit range)
+  const minSilenceSec = 0.18;
+
+  const amps: number[] = [];
+  for (let i = 0; i + windowSize < sampleCount; i += hopSize) {
+    let sum = 0;
+    for (let j = 0; j < windowSize; j++) {
+      const idx = (i + j) * 2;
+      const lo = pcm[idx];
+      const hi = pcm[idx + 1];
+      let s = lo | (hi << 8);
+      if (s > 32767) s -= 65536;
+      sum += s * s;
+    }
+    amps.push(Math.sqrt(sum / windowSize));
+  }
+
+  const silences: Array<{
+    startSec: number;
+    endSec: number;
+    durationSec: number;
+  }> = [];
+  let runStart: number | null = null;
+  const pushIfLongEnough = (startIdx: number, endIdx: number) => {
+    const durationSec = ((endIdx - startIdx) * hopSize) / sampleRate;
+    if (durationSec >= minSilenceSec) {
+      silences.push({
+        startSec: (startIdx * hopSize) / sampleRate,
+        endSec: (endIdx * hopSize) / sampleRate,
+        durationSec,
+      });
+    }
+  };
+  for (let i = 0; i < amps.length; i++) {
+    if (amps[i] < silenceThreshold) {
+      if (runStart === null) runStart = i;
+    } else if (runStart !== null) {
+      pushIfLongEnough(runStart, i);
+      runStart = null;
+    }
+  }
+  if (runStart !== null) pushIfLongEnough(runStart, amps.length);
+
+  return silences;
+}
+
+function computeSentenceTimings(
+  pcm: Uint8Array,
+  sampleRate: number,
+  sentenceCount: number,
+  totalDurationSec: number,
+): SentenceTiming[] | null {
+  if (sentenceCount <= 1) {
+    return [{ startSec: 0, endSec: totalDurationSec }];
+  }
+
+  const allSilences = detectSilences(pcm, sampleRate);
+  // Drop leading/trailing silences — we only care about internal breaks.
+  const internal = allSilences.filter(
+    (s) => s.startSec > 0.12 && s.endSec < totalDurationSec - 0.12,
+  );
+
+  const needed = sentenceCount - 1;
+  if (internal.length < needed) {
+    return null;
+  }
+
+  const topN = [...internal]
+    .sort((a, b) => b.durationSec - a.durationSec)
+    .slice(0, needed)
+    .sort((a, b) => a.startSec - b.startSec);
+
+  const timings: SentenceTiming[] = [];
+  let prev = 0;
+  for (let i = 0; i < sentenceCount; i++) {
+    // Cut each sentence boundary at the midpoint of the silence after it.
+    const cutSec =
+      i < needed
+        ? (topN[i].startSec + topN[i].endSec) / 2
+        : totalDurationSec;
+    timings.push({ startSec: prev, endSec: cutSec });
+    prev = cutSec;
+  }
+  return timings;
+}
+
 export async function generateSpeech(
   input: z.input<typeof inputSchema>,
 ): Promise<SpeechResult> {
@@ -141,7 +287,13 @@ export async function generateSpeech(
 
   // Storage cache: if the file already exists, skip Gemini entirely.
   if (await urlExists(publicUrl)) {
-    return { ok: true, audioUrl: publicUrl, cached: true };
+    const timings = await fetchStoredTimings(hash);
+    return {
+      ok: true,
+      audioUrl: publicUrl,
+      sentenceTimings: timings,
+      cached: true,
+    };
   }
 
   // Rate limit only before we actually hit Gemini.
@@ -182,17 +334,40 @@ export async function generateSpeech(
     }
 
     // Convert PCM16 → WAV (so browsers can play the file directly from URL).
-    const rawBytes = Buffer.from(dataB64, 'base64');
+    const rawBytes = new Uint8Array(Buffer.from(dataB64, 'base64'));
+    const sampleRate = parseSampleRate(mimeType);
     const wavBytes = isPcm16(mimeType)
-      ? pcm16ToWav(new Uint8Array(rawBytes), parseSampleRate(mimeType))
-      : new Uint8Array(rawBytes);
+      ? pcm16ToWav(rawBytes, sampleRate)
+      : rawBytes;
 
     const uploaded = await uploadWav(hash, wavBytes);
     if (!uploaded) {
       return { ok: false, error: 'TTS_FAILED' };
     }
 
-    return { ok: true, audioUrl: publicUrl, cached: false };
+    // Compute per-sentence timings via silence detection and persist them.
+    let timings: SentenceTiming[] | undefined;
+    if (isPcm16(mimeType)) {
+      const totalDurationSec = rawBytes.length / 2 / sampleRate;
+      const sentences = splitSentences(text.trim());
+      const detected = computeSentenceTimings(
+        rawBytes,
+        sampleRate,
+        sentences.length,
+        totalDurationSec,
+      );
+      if (detected) {
+        timings = detected;
+        await uploadTimings(hash, detected);
+      }
+    }
+
+    return {
+      ok: true,
+      audioUrl: publicUrl,
+      sentenceTimings: timings,
+      cached: false,
+    };
   } catch (err) {
     console.error('[TTS] Gemini error', err);
     return { ok: false, error: 'TTS_FAILED' };

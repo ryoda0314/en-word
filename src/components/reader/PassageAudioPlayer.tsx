@@ -14,7 +14,7 @@ import { AlertCircle, Headphones, Loader2, Pause, Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
-import { generateSpeech } from '@/lib/actions/speech';
+import { generateSpeech, type SentenceTiming } from '@/lib/actions/speech';
 import type { Sentence } from '@/lib/text/sentences';
 
 function formatTime(seconds: number): string {
@@ -37,6 +37,7 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timedSentencesRef = useRef<Sentence[]>([]);
   const currentSentenceIdxRef = useRef<number>(-1);
+  const serverTimingsRef = useRef<SentenceTiming[] | null>(null);
 
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +63,17 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
       timedSentencesRef.current = [];
       return;
     }
+    const server = serverTimingsRef.current;
+    if (server && server.length === sentences.length) {
+      // Exact timings from silence detection on the server.
+      timedSentencesRef.current = sentences.map((s, i) => ({
+        ...s,
+        startSec: server[i].startSec,
+        endSec: server[i].endSec,
+      }));
+      return;
+    }
+    // Fallback: evenly proportional to character length.
     const totalChars = sentences[sentences.length - 1].charEnd;
     timedSentencesRef.current = sentences.map((s) => ({
       ...s,
@@ -113,6 +125,7 @@ export function PassageAudioPlayer({ text, sentences, onRangeChange }: Props) {
       return null;
     }
 
+    serverTimingsRef.current = result.sentenceTimings ?? null;
     const audio = new Audio(result.audioUrl);
     audio.preload = 'auto';
     audio.playbackRate = Number(rate);
