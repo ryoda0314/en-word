@@ -6,7 +6,7 @@ import { WatchView } from '@/components/watch/WatchView';
 import { getVideoWithCues } from '@/lib/actions/youtube';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { tokenizePassage } from '@/lib/text/tokenize';
-import type { IdiomRow, VideoCueRow, WordRow } from '@/types/db';
+import type { IdiomRow, WordRow } from '@/types/db';
 
 export default async function WatchDetailPage({
   params,
@@ -39,7 +39,7 @@ export default async function WatchDetailPage({
 
   const idiomList = (idioms ?? []).map((i) => ({ id: i.id, phrase: i.phrase }));
 
-  const tokenizedCues = cues.map((cue: VideoCueRow) => {
+  const tokenizedCues = cues.map((cue) => {
     const { tokens, idiomSpans } = tokenizePassage({
       body: cue.text,
       wordsByLemma,

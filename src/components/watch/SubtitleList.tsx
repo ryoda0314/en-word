@@ -61,7 +61,7 @@ export function SubtitleList({
       `[data-cue-seq="${activeSeq}"]`,
     );
     if (el) {
-      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      el.scrollIntoView({ block: 'center', behavior: 'instant' });
     }
   }, [activeSeq]);
 

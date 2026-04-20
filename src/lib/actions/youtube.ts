@@ -1,6 +1,8 @@
 'use server';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+// Import the ESM dist file directly: the package.json declares "type":"module"
+// but its `main` entry uses CJS exports syntax, which Node.js 24 rejects.
+// The ESM file has proper `export {}` and is safe to bundle with Turbopack.
 import {
   YoutubeTranscript,
   YoutubeTranscriptDisabledError,
@@ -9,20 +11,14 @@ import {
   YoutubeTranscriptNotAvailableLanguageError,
   YoutubeTranscriptTooManyRequestError,
   YoutubeTranscriptVideoUnavailableError,
-  type TranscriptResponse,
-} from 'youtube-transcript';
+} from 'youtube-transcript/dist/youtube-transcript.esm.js';
+import type { TranscriptResponse } from 'youtube-transcript';
 import { z } from 'zod';
 
 import { isApproved } from '@/lib/auth/approval';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/service';
 import type { VideoCueRow, VideoRow } from '@/types/db';
-
-// Cast until migration 20260419000003 is pushed and db:types re-runs.
-// At that point the Database generic covers videos/video_cues and these
-// any-casts can be removed.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyClient = SupabaseClient<any, any, any>;
 
 const urlSchema = z.object({ url: z.string().min(1).max(500) });
 
@@ -73,7 +69,7 @@ export async function importYoutubeVideo(
   const youtubeId = await extractYoutubeId(parsed.data.url);
   if (!youtubeId) return { ok: false, error: 'INVALID_URL' };
 
-  const service = createSupabaseServiceClient() as unknown as AnyClient;
+  const service = createSupabaseServiceClient();
 
   // Cache hit: return without consuming rate limit.
   const { data: existing } = await service
@@ -87,12 +83,7 @@ export async function importYoutubeVideo(
       .from('video_cues')
       .select('*', { count: 'exact', head: true })
       .eq('video_id', existing.id);
-    return {
-      ok: true,
-      video: existing as VideoRow,
-      cueCount: count ?? 0,
-      cached: true,
-    };
+    return { ok: true, video: existing, cueCount: count ?? 0, cached: true };
   }
 
   const allowed = await checkAndBumpRate(user.id, 'youtube.import', 5);
@@ -119,8 +110,9 @@ export async function importYoutubeVideo(
     return { ok: false, error: 'SAVE_FAILED' };
   }
 
+  const videoId = inserted.id;
   const rows = cues.map((c, i) => ({
-    video_id: inserted.id,
+    video_id: videoId,
     seq: i,
     start_ms: c.start_ms,
     end_ms: c.end_ms,
@@ -133,17 +125,12 @@ export async function importYoutubeVideo(
     const { error: cueErr } = await service.from('video_cues').insert(chunk);
     if (cueErr) {
       console.error('video_cues insert failed:', cueErr);
-      await service.from('videos').delete().eq('id', inserted.id);
+      await service.from('videos').delete().eq('id', videoId);
       return { ok: false, error: 'SAVE_FAILED' };
     }
   }
 
-  return {
-    ok: true,
-    video: inserted as VideoRow,
-    cueCount: rows.length,
-    cached: false,
-  };
+  return { ok: true, video: inserted, cueCount: rows.length, cached: false };
 }
 
 export async function getVideoWithCues(
@@ -161,25 +148,20 @@ export async function getVideoWithCues(
     return { ok: false, error: 'NOT_APPROVED' };
   }
 
-  const client = supabase as unknown as AnyClient;
-  const { data: video } = await client
+  const { data: video } = await supabase
     .from('videos')
     .select('id, youtube_id, title, lang, created_at')
     .eq('youtube_id', youtubeId)
     .maybeSingle();
   if (!video) return { ok: false, error: 'NOT_FOUND' };
 
-  const { data: cues } = await client
+  const { data: cues } = await supabase
     .from('video_cues')
     .select('id, video_id, seq, start_ms, end_ms, text')
     .eq('video_id', video.id)
     .order('seq', { ascending: true });
 
-  return {
-    ok: true,
-    video: video as VideoRow,
-    cues: (cues as VideoCueRow[]) ?? [],
-  };
+  return { ok: true, video, cues: cues ?? [] };
 }
 
 // --- helpers ---------------------------------------------------------------

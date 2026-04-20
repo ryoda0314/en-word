@@ -12,7 +12,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { ImportForm } from '@/components/watch/ImportForm';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import type { VideoRow } from '@/types/db';
 
 export default async function WatchListPage({
   params,
@@ -24,18 +23,7 @@ export default async function WatchListPage({
   const t = await getTranslations('watch');
 
   const supabase = await createSupabaseServerClient();
-  const { data } = await (supabase as unknown as {
-    from(table: 'videos'): {
-      select(cols: string): {
-        order(
-          col: string,
-          opts: { ascending: boolean },
-        ): {
-          limit(n: number): Promise<{ data: VideoRow[] | null }>;
-        };
-      };
-    };
-  })
+  const { data } = await supabase
     .from('videos')
     .select('id, youtube_id, title, lang, created_at')
     .order('created_at', { ascending: false })
@@ -76,31 +64,29 @@ export default async function WatchListPage({
           ) : (
             <Stack gap="xs">
               {videos.map((v) => (
-                <Card
+                <Link
                   key={v.id}
-                  component={Link}
                   href={`/watch/${v.youtube_id}`}
-                  withBorder
-                  p="md"
-                  radius="md"
                   style={{ textDecoration: 'none' }}
                 >
-                  <Group justify="space-between" wrap="nowrap">
-                    <Stack gap={4} style={{ minWidth: 0 }}>
-                      <Text fw={600} size="sm" truncate>
-                        {v.title ?? v.youtube_id}
-                      </Text>
-                      <Text c="dimmed" size="xs" ff="monospace" truncate>
-                        {v.youtube_id}
-                      </Text>
-                    </Stack>
-                    {v.lang ? (
-                      <Badge size="xs" variant="default">
-                        {v.lang}
-                      </Badge>
-                    ) : null}
-                  </Group>
-                </Card>
+                  <Card withBorder p="md" radius="md">
+                    <Group justify="space-between" wrap="nowrap">
+                      <Stack gap={4} style={{ minWidth: 0 }}>
+                        <Text fw={600} size="sm" truncate>
+                          {v.title ?? v.youtube_id}
+                        </Text>
+                        <Text c="dimmed" size="xs" ff="monospace" truncate>
+                          {v.youtube_id}
+                        </Text>
+                      </Stack>
+                      {v.lang ? (
+                        <Badge size="xs" variant="default">
+                          {v.lang}
+                        </Badge>
+                      ) : null}
+                    </Group>
+                  </Card>
+                </Link>
               ))}
             </Stack>
           )}

@@ -90,11 +90,8 @@ export async function addToVocab(
       custom_term: customTerm ?? null,
       custom_meaning_ja: customMeaningJa ?? null,
       source_passage_id: passageId ?? null,
-      // Cast until db:types picks up the new columns from migration 20260419000003.
-      ...({
-        source_video_id: sourceVideoId ?? null,
-        source_video_cue_seq: sourceVideoCueSeq ?? null,
-      } as unknown as Record<string, never>),
+      source_video_id: sourceVideoId ?? null,
+      source_video_cue_seq: sourceVideoCueSeq ?? null,
       context_sentence: contextSentence ?? null,
     })
     .select('id')

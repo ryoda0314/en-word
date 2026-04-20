@@ -7,7 +7,9 @@ import {
   Divider,
   Group,
   Loader,
+  Modal,
   Popover,
+  Portal,
   Skeleton,
   Stack,
   Text,
@@ -16,10 +18,11 @@ import {
   AlertCircle,
   BookmarkCheck,
   BookPlus,
+  Quote,
   Sparkles,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 
 import { type GlossData, lookupGloss } from '@/lib/actions/gloss';
 import { addToVocab } from '@/lib/actions/vocab';
@@ -74,7 +77,118 @@ export function SubtitleCue({
   const [aiByTokenId, setAiByTokenId] = useState<Record<number, AiState>>({});
   const [pending, startTransition] = useTransition();
 
+  const cueTextRef = useRef<HTMLDivElement | null>(null);
+  const [phraseSel, setPhraseSel] = useState<{
+    text: string;
+    tokenIds: Set<number>;
+    buttonTop: number;
+    buttonLeft: number;
+    groupRects: Array<{ top: number; left: number; width: number; height: number }>;
+  } | null>(null);
+  const [phraseModal, setPhraseModal] = useState<{ text: string } | null>(null);
+  const [phraseAi, setPhraseAi] = useState<AiState | null>(null);
+
   const idiomSpanById = new Map(idiomSpans.map((s) => [s.id, s]));
+
+  useEffect(() => {
+    function onSelectionChange() {
+      const sel = window.getSelection();
+      const container = cueTextRef.current;
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0 || !container) {
+        setPhraseSel(null);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      if (!container.contains(range.commonAncestorContainer)) {
+        setPhraseSel(null);
+        return;
+      }
+      const spans = Array.from(container.querySelectorAll<HTMLElement>('[data-token-id]'));
+      const idsInRange: number[] = [];
+      for (const span of spans) {
+        if (range.intersectsNode(span)) {
+          const id = Number(span.dataset.tokenId);
+          if (!Number.isNaN(id)) idsInRange.push(id);
+        }
+      }
+      idsInRange.sort((a, b) => a - b);
+      if (idsInRange.length < 2) { setPhraseSel(null); return; }
+
+      const wordTokens = new Map(
+        tokens.flatMap((t) =>
+          t.kind === 'word' ? [[t.id, t] as [number, Extract<typeof t, { kind: 'word' }>]] : [],
+        ),
+      );
+      const firstTok = wordTokens.get(idsInRange[0]);
+      const lastTok = wordTokens.get(idsInRange[idsInRange.length - 1]);
+      if (!firstTok || !lastTok) { setPhraseSel(null); return; }
+
+      const text = cueText.slice(firstTok.charStart, lastTok.charEnd).replace(/\s+/g, ' ').trim();
+
+      const firstEl = container.querySelector<HTMLElement>(`[data-token-id="${firstTok.id}"]`);
+      const lastEl = container.querySelector<HTMLElement>(`[data-token-id="${lastTok.id}"]`);
+      if (!firstEl || !lastEl) { setPhraseSel(null); return; }
+
+      const domRange = document.createRange();
+      domRange.setStartBefore(firstEl);
+      domRange.setEndAfter(lastEl);
+      const rawRects = Array.from(domRange.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+      const LINE_EPSILON = 3;
+      const sorted = rawRects.slice().sort((a, b) => a.top - b.top || a.left - b.left);
+      const lineGroups: DOMRect[][] = [];
+      for (const r of sorted) {
+        const last = lineGroups[lineGroups.length - 1];
+        if (last && Math.abs(last[0].top - r.top) <= LINE_EPSILON && Math.abs(last[0].bottom - r.bottom) <= LINE_EPSILON) {
+          last.push(r);
+        } else {
+          lineGroups.push([r]);
+        }
+      }
+      const sy = window.scrollY;
+      const sx = window.scrollX;
+      const groupRects = lineGroups.map((line) => ({
+        top: Math.min(...line.map((r) => r.top)) + sy,
+        left: Math.min(...line.map((r) => r.left)) + sx,
+        width: Math.max(...line.map((r) => r.right)) - Math.min(...line.map((r) => r.left)),
+        height: Math.max(...line.map((r) => r.bottom)) - Math.min(...line.map((r) => r.top)),
+      }));
+      const r1 = firstEl.getBoundingClientRect();
+      setPhraseSel({
+        text,
+        tokenIds: new Set(idsInRange),
+        buttonTop: r1.top + sy,
+        buttonLeft: (r1.left + r1.right) / 2 + sx,
+        groupRects,
+      });
+    }
+    document.addEventListener('selectionchange', onSelectionChange);
+    return () => document.removeEventListener('selectionchange', onSelectionChange);
+  }, [tokens, cueText]);
+
+  const openPhraseModal = useCallback(() => {
+    if (!phraseSel) return;
+    setPhraseModal({ text: phraseSel.text });
+    setPhraseAi({ status: 'loading' });
+    setPhraseSel(null);
+    window.getSelection()?.removeAllRanges();
+    lookupGloss({ term: phraseSel.text, kind: 'phrase', context: cueText }).then((res) => {
+      setPhraseAi(res.ok ? { status: 'ready', data: res.gloss } : { status: 'error', code: res.error });
+    });
+  }, [phraseSel, cueText]);
+
+  function savePhrase(gloss: GlossData) {
+    startTransition(async () => {
+      const result = gloss.idiomId
+        ? await addToVocab({ idiomId: gloss.idiomId, sourceVideoId: videoId, sourceVideoCueSeq: cueSeq, contextSentence: cueText })
+        : await addToVocab({ customTerm: gloss.headword, customMeaningJa: gloss.meaning_ja, sourceVideoId: videoId, sourceVideoCueSeq: cueSeq, contextSentence: cueText });
+      if (result.ok) {
+        if (gloss.idiomId) onSavedIdiom(gloss.idiomId);
+        else onSavedCustom(gloss.headword);
+        setPhraseModal(null);
+        setPhraseAi(null);
+      }
+    });
+  }
 
   useEffect(() => {
     if (openTokenId === null) return;
@@ -169,6 +283,7 @@ export function SubtitleCue({
   }
 
   return (
+    <>
     <div
       className={[styles.cue, active ? styles.active : null]
         .filter(Boolean)
@@ -183,7 +298,7 @@ export function SubtitleCue({
       >
         {formatTime(startMs)}
       </button>
-      <div className={styles.cueText}>
+      <div ref={cueTextRef} className={styles.cueText}>
         {tokens.map((token, i) => {
           if (token.kind === 'text') {
             return (
@@ -208,12 +323,14 @@ export function SubtitleCue({
               savedCustomTerms.has(token.surface.toLowerCase()),
           );
 
+          const isInSelection = phraseSel?.tokenIds.has(token.id) ?? false;
           const className = [
             styles.token,
             isDict ? null : styles.unknown,
             word ? styles.inDict : null,
             idiom ? styles.inIdiom : null,
             isSaved ? styles.saved : null,
+            isInSelection ? styles.inSelection : null,
           ]
             .filter(Boolean)
             .join(' ');
@@ -234,6 +351,7 @@ export function SubtitleCue({
                 <span
                   role="button"
                   tabIndex={0}
+                  data-token-id={token.id}
                   className={className}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -283,6 +401,56 @@ export function SubtitleCue({
         })}
       </div>
     </div>
+    {phraseSel ? (
+      <Portal>
+        {phraseSel.groupRects.map((r, i) => (
+          <div
+            key={i}
+            className={styles.phraseOutline}
+            style={{ top: r.top - 2, left: r.left - 2, width: r.width + 4, height: r.height + 4 }}
+            aria-hidden
+          />
+        ))}
+        <div className={styles.phraseFab} style={{ top: phraseSel.buttonTop, left: phraseSel.buttonLeft }}>
+          <Button
+            size="xs"
+            leftSection={<Quote size={14} />}
+            variant="filled"
+            onMouseDown={(e) => { e.preventDefault(); openPhraseModal(); }}
+          >
+            {t('lookupPhrase')} ({phraseSel.tokenIds.size})
+          </Button>
+        </div>
+      </Portal>
+    ) : null}
+
+    <Modal
+      opened={phraseModal !== null}
+      onClose={() => { setPhraseModal(null); setPhraseAi(null); }}
+      title={phraseModal ? (
+        <Group gap="xs">
+          <Sparkles size={16} />
+          <Text fw={600}>{phraseModal.text}</Text>
+        </Group>
+      ) : null}
+      size="md"
+    >
+      {phraseModal && phraseAi ? (
+        <AiWordCard
+          state={phraseAi}
+          saved={savedCustomTerms.has(phraseModal.text.toLowerCase())}
+          pending={pending}
+          onSave={savePhrase}
+          onRetry={() => {
+            setPhraseAi({ status: 'loading' });
+            lookupGloss({ term: phraseModal.text, kind: 'phrase', context: cueText }).then((res) => {
+              setPhraseAi(res.ok ? { status: 'ready', data: res.gloss } : { status: 'error', code: res.error });
+            });
+          }}
+        />
+      ) : null}
+    </Modal>
+    </>
   );
 }
 

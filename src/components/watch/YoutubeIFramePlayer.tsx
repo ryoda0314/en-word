@@ -93,7 +93,7 @@ export function YoutubeIFramePlayer({
                 if (typeof sec === 'number') {
                   onTime?.(Math.round(sec * 1000));
                 }
-              }, 200);
+              }, 100);
             } else {
               if (intervalRef.current) {
                 clearInterval(intervalRef.current);
