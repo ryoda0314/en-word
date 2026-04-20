@@ -7,9 +7,7 @@ import {
   Divider,
   Group,
   Loader,
-  Modal,
   Popover,
-  Portal,
   Skeleton,
   Stack,
   Text,
@@ -18,11 +16,10 @@ import {
   AlertCircle,
   BookmarkCheck,
   BookPlus,
-  Quote,
   Sparkles,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
 import { type GlossData, lookupGloss } from '@/lib/actions/gloss';
 import { addToVocab } from '@/lib/actions/vocab';
@@ -53,6 +50,7 @@ type Props = {
   onSavedCustom: (term: string) => void;
   onRequestSeek?: (ms: number) => void;
   startMs: number;
+  phraseSelTokenIds?: Set<number>;
 };
 
 export function SubtitleCue({
@@ -72,123 +70,13 @@ export function SubtitleCue({
   onSavedCustom,
   onRequestSeek,
   startMs,
+  phraseSelTokenIds,
 }: Props) {
   const [openTokenId, setOpenTokenId] = useState<number | null>(null);
   const [aiByTokenId, setAiByTokenId] = useState<Record<number, AiState>>({});
   const [pending, startTransition] = useTransition();
 
-  const cueTextRef = useRef<HTMLDivElement | null>(null);
-  const [phraseSel, setPhraseSel] = useState<{
-    text: string;
-    tokenIds: Set<number>;
-    buttonTop: number;
-    buttonLeft: number;
-    groupRects: Array<{ top: number; left: number; width: number; height: number }>;
-  } | null>(null);
-  const [phraseModal, setPhraseModal] = useState<{ text: string } | null>(null);
-  const [phraseAi, setPhraseAi] = useState<AiState | null>(null);
-
   const idiomSpanById = new Map(idiomSpans.map((s) => [s.id, s]));
-
-  useEffect(() => {
-    function onSelectionChange() {
-      const sel = window.getSelection();
-      const container = cueTextRef.current;
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0 || !container) {
-        setPhraseSel(null);
-        return;
-      }
-      const range = sel.getRangeAt(0);
-      if (!container.contains(range.commonAncestorContainer)) {
-        setPhraseSel(null);
-        return;
-      }
-      const spans = Array.from(container.querySelectorAll<HTMLElement>('[data-token-id]'));
-      const idsInRange: number[] = [];
-      for (const span of spans) {
-        if (range.intersectsNode(span)) {
-          const id = Number(span.dataset.tokenId);
-          if (!Number.isNaN(id)) idsInRange.push(id);
-        }
-      }
-      idsInRange.sort((a, b) => a - b);
-      if (idsInRange.length < 2) { setPhraseSel(null); return; }
-
-      const wordTokens = new Map(
-        tokens.flatMap((t) =>
-          t.kind === 'word' ? [[t.id, t] as [number, Extract<typeof t, { kind: 'word' }>]] : [],
-        ),
-      );
-      const firstTok = wordTokens.get(idsInRange[0]);
-      const lastTok = wordTokens.get(idsInRange[idsInRange.length - 1]);
-      if (!firstTok || !lastTok) { setPhraseSel(null); return; }
-
-      const text = cueText.slice(firstTok.charStart, lastTok.charEnd).replace(/\s+/g, ' ').trim();
-
-      const firstEl = container.querySelector<HTMLElement>(`[data-token-id="${firstTok.id}"]`);
-      const lastEl = container.querySelector<HTMLElement>(`[data-token-id="${lastTok.id}"]`);
-      if (!firstEl || !lastEl) { setPhraseSel(null); return; }
-
-      const domRange = document.createRange();
-      domRange.setStartBefore(firstEl);
-      domRange.setEndAfter(lastEl);
-      const rawRects = Array.from(domRange.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
-      const LINE_EPSILON = 3;
-      const sorted = rawRects.slice().sort((a, b) => a.top - b.top || a.left - b.left);
-      const lineGroups: DOMRect[][] = [];
-      for (const r of sorted) {
-        const last = lineGroups[lineGroups.length - 1];
-        if (last && Math.abs(last[0].top - r.top) <= LINE_EPSILON && Math.abs(last[0].bottom - r.bottom) <= LINE_EPSILON) {
-          last.push(r);
-        } else {
-          lineGroups.push([r]);
-        }
-      }
-      const sy = window.scrollY;
-      const sx = window.scrollX;
-      const groupRects = lineGroups.map((line) => ({
-        top: Math.min(...line.map((r) => r.top)) + sy,
-        left: Math.min(...line.map((r) => r.left)) + sx,
-        width: Math.max(...line.map((r) => r.right)) - Math.min(...line.map((r) => r.left)),
-        height: Math.max(...line.map((r) => r.bottom)) - Math.min(...line.map((r) => r.top)),
-      }));
-      const r1 = firstEl.getBoundingClientRect();
-      setPhraseSel({
-        text,
-        tokenIds: new Set(idsInRange),
-        buttonTop: r1.top + sy,
-        buttonLeft: (r1.left + r1.right) / 2 + sx,
-        groupRects,
-      });
-    }
-    document.addEventListener('selectionchange', onSelectionChange);
-    return () => document.removeEventListener('selectionchange', onSelectionChange);
-  }, [tokens, cueText]);
-
-  const openPhraseModal = useCallback(() => {
-    if (!phraseSel) return;
-    setPhraseModal({ text: phraseSel.text });
-    setPhraseAi({ status: 'loading' });
-    setPhraseSel(null);
-    window.getSelection()?.removeAllRanges();
-    lookupGloss({ term: phraseSel.text, kind: 'phrase', context: cueText }).then((res) => {
-      setPhraseAi(res.ok ? { status: 'ready', data: res.gloss } : { status: 'error', code: res.error });
-    });
-  }, [phraseSel, cueText]);
-
-  function savePhrase(gloss: GlossData) {
-    startTransition(async () => {
-      const result = gloss.idiomId
-        ? await addToVocab({ idiomId: gloss.idiomId, sourceVideoId: videoId, sourceVideoCueSeq: cueSeq, contextSentence: cueText })
-        : await addToVocab({ customTerm: gloss.headword, customMeaningJa: gloss.meaning_ja, sourceVideoId: videoId, sourceVideoCueSeq: cueSeq, contextSentence: cueText });
-      if (result.ok) {
-        if (gloss.idiomId) onSavedIdiom(gloss.idiomId);
-        else onSavedCustom(gloss.headword);
-        setPhraseModal(null);
-        setPhraseAi(null);
-      }
-    });
-  }
 
   useEffect(() => {
     if (openTokenId === null) return;
@@ -278,12 +166,7 @@ export function SubtitleCue({
     );
   }
 
-  function handleTimeJump() {
-    onRequestSeek?.(startMs);
-  }
-
   return (
-    <>
     <div
       className={[styles.cue, active ? styles.active : null]
         .filter(Boolean)
@@ -293,12 +176,12 @@ export function SubtitleCue({
       <button
         type="button"
         className={styles.timeLabel}
-        onClick={handleTimeJump}
+        onClick={() => onRequestSeek?.(startMs)}
         aria-label="jump"
       >
         {formatTime(startMs)}
       </button>
-      <div ref={cueTextRef} className={styles.cueText}>
+      <div className={styles.cueText}>
         {tokens.map((token, i) => {
           if (token.kind === 'text') {
             return (
@@ -322,8 +205,8 @@ export function SubtitleCue({
               (word && savedWordIds.has(word.id)) ||
               savedCustomTerms.has(token.surface.toLowerCase()),
           );
+          const isInSelection = phraseSelTokenIds?.has(token.id) ?? false;
 
-          const isInSelection = phraseSel?.tokenIds.has(token.id) ?? false;
           const className = [
             styles.token,
             isDict ? null : styles.unknown,
@@ -355,6 +238,8 @@ export function SubtitleCue({
                   className={className}
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Don't open popover when user is making a phrase selection
+                    if ((window.getSelection()?.toString().trim().split(/\s+/).filter(Boolean).length ?? 0) >= 2) return;
                     setOpenTokenId((curr) =>
                       curr === token.id ? null : token.id,
                     );
@@ -401,56 +286,6 @@ export function SubtitleCue({
         })}
       </div>
     </div>
-    {phraseSel ? (
-      <Portal>
-        {phraseSel.groupRects.map((r, i) => (
-          <div
-            key={i}
-            className={styles.phraseOutline}
-            style={{ top: r.top - 2, left: r.left - 2, width: r.width + 4, height: r.height + 4 }}
-            aria-hidden
-          />
-        ))}
-        <div className={styles.phraseFab} style={{ top: phraseSel.buttonTop, left: phraseSel.buttonLeft }}>
-          <Button
-            size="xs"
-            leftSection={<Quote size={14} />}
-            variant="filled"
-            onMouseDown={(e) => { e.preventDefault(); openPhraseModal(); }}
-          >
-            {t('lookupPhrase')} ({phraseSel.tokenIds.size})
-          </Button>
-        </div>
-      </Portal>
-    ) : null}
-
-    <Modal
-      opened={phraseModal !== null}
-      onClose={() => { setPhraseModal(null); setPhraseAi(null); }}
-      title={phraseModal ? (
-        <Group gap="xs">
-          <Sparkles size={16} />
-          <Text fw={600}>{phraseModal.text}</Text>
-        </Group>
-      ) : null}
-      size="md"
-    >
-      {phraseModal && phraseAi ? (
-        <AiWordCard
-          state={phraseAi}
-          saved={savedCustomTerms.has(phraseModal.text.toLowerCase())}
-          pending={pending}
-          onSave={savePhrase}
-          onRetry={() => {
-            setPhraseAi({ status: 'loading' });
-            lookupGloss({ term: phraseModal.text, kind: 'phrase', context: cueText }).then((res) => {
-              setPhraseAi(res.ok ? { status: 'ready', data: res.gloss } : { status: 'error', code: res.error });
-            });
-          }}
-        />
-      ) : null}
-    </Modal>
-    </>
   );
 }
 
@@ -480,55 +315,26 @@ function WordCard({
   return (
     <Stack gap="xs">
       <Group gap={6} wrap="wrap" align="center">
-        <Text fw={700} fz="lg">
-          {word.lemma}
-        </Text>
-        {word.pos ? (
-          <Badge size="xs" variant="default">
-            {word.pos}
-          </Badge>
-        ) : null}
-        {word.ipa ? (
-          <Text c="dimmed" size="xs" ff="monospace">
-            {word.ipa}
-          </Text>
-        ) : null}
+        <Text fw={700} fz="lg">{word.lemma}</Text>
+        {word.pos ? <Badge size="xs" variant="default">{word.pos}</Badge> : null}
+        {word.ipa ? <Text c="dimmed" size="xs" ff="monospace">{word.ipa}</Text> : null}
       </Group>
       {word.meaning_ja ? <Text size="sm">{word.meaning_ja}</Text> : null}
-      {word.meaning_en ? (
-        <Text c="dimmed" size="xs" lh={1.5}>
-          {word.meaning_en}
-        </Text>
-      ) : null}
+      {word.meaning_en ? <Text c="dimmed" size="xs" lh={1.5}>{word.meaning_en}</Text> : null}
       {word.example_en ? (
         <>
           <Divider my={4} />
-          <Text size="xs" fs="italic">
-            {word.example_en}
-          </Text>
-          {word.example_ja ? (
-            <Text c="dimmed" size="xs">
-              {word.example_ja}
-            </Text>
-          ) : null}
+          <Text size="xs" fs="italic">{word.example_en}</Text>
+          {word.example_ja ? <Text c="dimmed" size="xs">{word.example_ja}</Text> : null}
         </>
       ) : null}
       <Group mt={6} justify="flex-end">
         {saved ? (
-          <Badge
-            color="teal"
-            variant="light"
-            leftSection={<BookmarkCheck size={12} />}
-          >
+          <Badge color="teal" variant="light" leftSection={<BookmarkCheck size={12} />}>
             {t('saved')}
           </Badge>
         ) : (
-          <Button
-            size="xs"
-            leftSection={<BookPlus size={14} />}
-            loading={pending}
-            onClick={onSave}
-          >
+          <Button size="xs" leftSection={<BookPlus size={14} />} loading={pending} onClick={onSave}>
             {t('addToVocab')}
           </Button>
         )}
@@ -552,48 +358,25 @@ function IdiomCard({
   return (
     <Stack gap="xs">
       <Group gap={6} wrap="wrap" align="center">
-        <Badge size="xs" color="indigo" variant="light">
-          {t('idiomBadge')}
-        </Badge>
-        <Text fw={700} fz="md">
-          {idiom.phrase}
-        </Text>
+        <Badge size="xs" color="indigo" variant="light">{t('idiomBadge')}</Badge>
+        <Text fw={700} fz="md">{idiom.phrase}</Text>
       </Group>
       {idiom.meaning_ja ? <Text size="sm">{idiom.meaning_ja}</Text> : null}
-      {idiom.meaning_en ? (
-        <Text c="dimmed" size="xs" lh={1.5}>
-          {idiom.meaning_en}
-        </Text>
-      ) : null}
+      {idiom.meaning_en ? <Text c="dimmed" size="xs" lh={1.5}>{idiom.meaning_en}</Text> : null}
       {idiom.example_en ? (
         <>
           <Divider my={4} />
-          <Text size="xs" fs="italic">
-            {idiom.example_en}
-          </Text>
-          {idiom.example_ja ? (
-            <Text c="dimmed" size="xs">
-              {idiom.example_ja}
-            </Text>
-          ) : null}
+          <Text size="xs" fs="italic">{idiom.example_en}</Text>
+          {idiom.example_ja ? <Text c="dimmed" size="xs">{idiom.example_ja}</Text> : null}
         </>
       ) : null}
       <Group mt={6} justify="flex-end">
         {saved ? (
-          <Badge
-            color="teal"
-            variant="light"
-            leftSection={<BookmarkCheck size={12} />}
-          >
+          <Badge color="teal" variant="light" leftSection={<BookmarkCheck size={12} />}>
             {t('saved')}
           </Badge>
         ) : (
-          <Button
-            size="xs"
-            leftSection={<BookPlus size={14} />}
-            loading={pending}
-            onClick={onSave}
-          >
+          <Button size="xs" leftSection={<BookPlus size={14} />} loading={pending} onClick={onSave}>
             {t('addToVocab')}
           </Button>
         )}
@@ -621,9 +404,7 @@ function AiWordCard({
       <Stack gap="xs">
         <Group gap="xs">
           <Loader size="xs" />
-          <Text size="xs" c="dimmed">
-            {t('lookingUp')}
-          </Text>
+          <Text size="xs" c="dimmed">{t('lookingUp')}</Text>
         </Group>
         <Skeleton height={14} radius="sm" />
         <Skeleton height={14} radius="sm" width="70%" />
@@ -632,19 +413,15 @@ function AiWordCard({
   }
   if (state.status === 'error') {
     const msg =
-      state.code === 'RATE_LIMITED'
-        ? t('rateLimited')
-        : state.code === 'UNAUTHENTICATED'
-          ? t('notSignedIn')
-          : t('aiFailed');
+      state.code === 'RATE_LIMITED' ? t('rateLimited') :
+      state.code === 'UNAUTHENTICATED' ? t('notSignedIn') :
+      t('aiFailed');
     return (
       <Stack gap="xs">
         <Alert color="red" variant="light" icon={<AlertCircle size={14} />} p="xs">
           <Text size="xs">{msg}</Text>
         </Alert>
-        <Button size="xs" variant="light" onClick={onRetry}>
-          {t('retry')}
-        </Button>
+        <Button size="xs" variant="light" onClick={onRetry}>{t('retry')}</Button>
       </Stack>
     );
   }
@@ -652,61 +429,29 @@ function AiWordCard({
   return (
     <Stack gap="xs">
       <Group gap={6} wrap="wrap" align="center">
-        <Text fw={700} fz="lg">
-          {gloss.headword}
-        </Text>
-        {gloss.pos ? (
-          <Badge size="xs" variant="default">
-            {gloss.pos}
-          </Badge>
-        ) : null}
-        {gloss.ipa ? (
-          <Text c="dimmed" size="xs" ff="monospace">
-            {gloss.ipa}
-          </Text>
-        ) : null}
+        <Text fw={700} fz="lg">{gloss.headword}</Text>
+        {gloss.pos ? <Badge size="xs" variant="default">{gloss.pos}</Badge> : null}
+        {gloss.ipa ? <Text c="dimmed" size="xs" ff="monospace">{gloss.ipa}</Text> : null}
         <Badge size="xs" color="grape" variant="light">
-          <Group gap={4} wrap="nowrap">
-            <Sparkles size={10} />
-            {t('aiBadge')}
-          </Group>
+          <Group gap={4} wrap="nowrap"><Sparkles size={10} />{t('aiBadge')}</Group>
         </Badge>
       </Group>
       {gloss.meaning_ja ? <Text size="sm">{gloss.meaning_ja}</Text> : null}
-      {gloss.meaning_en ? (
-        <Text c="dimmed" size="xs" lh={1.5}>
-          {gloss.meaning_en}
-        </Text>
-      ) : null}
+      {gloss.meaning_en ? <Text c="dimmed" size="xs" lh={1.5}>{gloss.meaning_en}</Text> : null}
       {gloss.example_en ? (
         <>
           <Divider my={4} />
-          <Text size="xs" fs="italic">
-            {gloss.example_en}
-          </Text>
-          {gloss.example_ja ? (
-            <Text c="dimmed" size="xs">
-              {gloss.example_ja}
-            </Text>
-          ) : null}
+          <Text size="xs" fs="italic">{gloss.example_en}</Text>
+          {gloss.example_ja ? <Text c="dimmed" size="xs">{gloss.example_ja}</Text> : null}
         </>
       ) : null}
       <Group mt={6} justify="flex-end">
         {saved ? (
-          <Badge
-            color="teal"
-            variant="light"
-            leftSection={<BookmarkCheck size={12} />}
-          >
+          <Badge color="teal" variant="light" leftSection={<BookmarkCheck size={12} />}>
             {t('saved')}
           </Badge>
         ) : (
-          <Button
-            size="xs"
-            leftSection={<BookPlus size={14} />}
-            loading={pending}
-            onClick={() => onSave(gloss)}
-          >
+          <Button size="xs" leftSection={<BookPlus size={14} />} loading={pending} onClick={() => onSave(gloss)}>
             {t('addToVocab')}
           </Button>
         )}
