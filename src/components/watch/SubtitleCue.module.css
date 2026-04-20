@@ -39,7 +39,9 @@
   font-size: 16px;
   line-height: 1.7;
   user-select: text;
+  -webkit-user-select: text;
   word-spacing: 0.02em;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .token {
