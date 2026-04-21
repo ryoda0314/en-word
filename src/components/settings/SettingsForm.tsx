@@ -16,8 +16,8 @@ import { CheckCircle2, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 
+import { signOutAction } from '@/lib/actions/auth';
 import { updateProfile } from '@/lib/actions/profile';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 type Locale = 'ja' | 'en';
 type MeaningLocale = 'ja' | 'en' | 'both';
@@ -74,8 +74,7 @@ export function SettingsForm({
   }
 
   async function handleSignOut() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    await signOutAction();
     window.location.assign(`/${currentLocale}`);
   }
 

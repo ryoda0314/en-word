@@ -38,7 +38,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { ComponentType, ReactNode } from 'react';
 
 import { Link, usePathname } from '@/i18n/navigation';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { signOutAction } from '@/lib/actions/auth';
 
 import styles from './AppShellLayout.module.css';
 
@@ -91,8 +91,7 @@ export function AppShellLayout({
   });
 
   async function handleSignOut() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    await signOutAction();
     window.location.assign('/');
   }
 

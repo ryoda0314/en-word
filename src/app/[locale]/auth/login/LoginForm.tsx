@@ -15,7 +15,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { z } from 'zod';
 
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import {
+  signInWithPasswordAction,
+  signUpWithPasswordAction,
+} from '@/lib/actions/auth';
 
 const schema = z.object({
   email: z.string().email('invalidEmail'),
@@ -47,39 +50,31 @@ export function LoginForm({
     validate: zodResolver(schema),
   });
 
-  const supabase = createSupabaseBrowserClient();
-
   async function handleEmail(values: { email: string; password: string }) {
     setLoading(true);
     setFormError(null);
     setNotice(null);
 
     if (mode === 'signin') {
-      const { error } = await supabase.auth.signInWithPassword(values);
-      if (error) {
-        setFormError(error.message);
+      const result = await signInWithPasswordAction(values);
+      if (!result.ok) {
+        setFormError(result.error);
         setLoading(false);
         return;
       }
       window.location.assign(next ?? `/${locale}/dashboard`);
     } else {
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?locale=${locale}`,
-        },
-      });
-      if (error) {
-        setFormError(error.message);
+      const result = await signUpWithPasswordAction({ ...values, locale });
+      if (!result.ok) {
+        setFormError(result.error);
         setLoading(false);
         return;
       }
-      if (data.session) {
-        window.location.assign(next ?? `/${locale}/dashboard`);
-      } else {
+      if (result.needsEmailConfirm) {
         setNotice(t('confirmEmail'));
         setLoading(false);
+      } else {
+        window.location.assign(next ?? `/${locale}/dashboard`);
       }
     }
   }

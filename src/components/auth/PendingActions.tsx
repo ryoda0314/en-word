@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { signOutAction } from '@/lib/actions/auth';
 
 export function PendingActions({ locale }: { locale: string }) {
   const t = useTranslations('pending');
@@ -20,8 +20,7 @@ export function PendingActions({ locale }: { locale: string }) {
   }
 
   async function handleSignOut() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    await signOutAction();
     window.location.assign(`/${locale}`);
   }
 
