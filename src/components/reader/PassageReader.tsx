@@ -148,6 +148,13 @@ export function PassageReader({
     return m;
   }, [tokens]);
 
+  // Pointer-based drag tracking — replaces window.getSelection() so iOS's
+  // native copy/translate callout never appears and overlaps our FAB.
+  const dragStartIdRef = useRef<number | null>(null);
+  const dragEndIdRef = useRef<number | null>(null);
+  const dragActiveRef = useRef(false);
+  const dragMultiTouchedRef = useRef(false);
+
   // ---- AI fetch for non-dict single words when their popover opens ----
   useEffect(() => {
     if (openTokenId === null) return;
@@ -168,66 +175,36 @@ export function PassageReader({
     });
   }, [openTokenId, tokenById, body, aiByTokenId]);
 
-  // ---- Token-aware text selection for phrase lookup ----
-  useEffect(() => {
-    function onSelectionChange() {
-      const sel = window.getSelection();
+  // ---- Pointer-based phrase selection (replaces native Selection) ----
+  // Token IDs are assigned in document order, so the inclusive [min, max]
+  // range is exactly what the drag covers.
+  const computePhraseSel = useCallback(
+    (startId: number, endId: number) => {
       const article = articleRef.current;
-      if (!sel || sel.isCollapsed || sel.rangeCount === 0 || !article) {
-        setPhraseSel(null);
-        return;
-      }
-      const range = sel.getRangeAt(0);
-      if (!article.contains(range.commonAncestorContainer)) {
-        setPhraseSel(null);
-        return;
-      }
-      const spans = Array.from(
-        article.querySelectorAll<HTMLElement>('[data-token-id]'),
-      );
-      const idsInRange: number[] = [];
-      for (const span of spans) {
-        if (range.intersectsNode(span)) {
-          const id = Number(span.dataset.tokenId);
-          if (!Number.isNaN(id)) idsInRange.push(id);
-        }
-      }
-      idsInRange.sort((a, b) => a - b);
-      if (idsInRange.length < 2) {
-        setPhraseSel(null);
-        return;
-      }
-      const firstTok = tokenById.get(idsInRange[0]);
-      const lastTok = tokenById.get(idsInRange[idsInRange.length - 1]);
-      if (!firstTok || !lastTok) {
-        setPhraseSel(null);
-        return;
-      }
-      // Snap to word boundaries: use the first/last tokens' char positions.
-      const text = body
-        .slice(firstTok.charStart, lastTok.charEnd)
-        .replace(/\s+/g, ' ')
-        .trim();
+      if (!article) return null;
+      const lo = Math.min(startId, endId);
+      const hi = Math.max(startId, endId);
+      const ids: number[] = [];
+      for (let i = lo; i <= hi; i++) if (tokenById.has(i)) ids.push(i);
+      if (ids.length < 2) return null;
+
+      const firstTok = tokenById.get(ids[0]);
+      const lastTok = tokenById.get(ids[ids.length - 1]);
+      if (!firstTok || !lastTok) return null;
       const firstEl = article.querySelector<HTMLElement>(
         `[data-token-id="${firstTok.id}"]`,
       );
       const lastEl = article.querySelector<HTMLElement>(
         `[data-token-id="${lastTok.id}"]`,
       );
-      if (!firstEl || !lastEl) {
-        setPhraseSel(null);
-        return;
-      }
-      // Use a programmatic Range spanning whole-word boundaries to collect
-      // per-line rects; each rect becomes a dotted overlay piece.
+      if (!firstEl || !lastEl) return null;
+
       const domRange = document.createRange();
       domRange.setStartBefore(firstEl);
       domRange.setEndAfter(lastEl);
       const rawRects = Array.from(domRange.getClientRects()).filter(
         (r) => r.width > 0 && r.height > 0,
       );
-      // Merge rects on the same line (browsers return one rect per span;
-      // we want one continuous outline per line).
       const LINE_EPSILON = 3;
       const sortedRects = rawRects
         .slice()
@@ -262,20 +239,89 @@ export function PassageReader({
       const r1 = firstEl.getBoundingClientRect();
       const buttonTop = r1.top + scrollY;
       const buttonLeft = (r1.left + r1.right) / 2 + scrollX;
-      const context = extractSentence(body, firstTok.charStart, lastTok.charEnd);
-      setPhraseSel({
+      const text = body
+        .slice(firstTok.charStart, lastTok.charEnd)
+        .replace(/\s+/g, ' ')
+        .trim();
+      const context = extractSentence(
+        body,
+        firstTok.charStart,
+        lastTok.charEnd,
+      );
+      return {
         text,
-        tokenIds: new Set(idsInRange),
+        tokenIds: new Set(ids),
         buttonTop,
         buttonLeft,
         groupRects,
         context,
-      });
+      };
+    },
+    [tokenById, body],
+  );
+
+  function tokenIdAtPoint(x: number, y: number): number | null {
+    const el = document.elementFromPoint(x, y) as HTMLElement | null;
+    if (!el) return null;
+    const span = el.closest<HTMLElement>('[data-token-id]');
+    if (!span) return null;
+    const n = Number(span.dataset.tokenId);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function handlePointerDown(e: React.PointerEvent<HTMLElement>) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const id = tokenIdAtPoint(e.clientX, e.clientY);
+    if (id === null) return;
+    dragStartIdRef.current = id;
+    dragEndIdRef.current = id;
+    dragActiveRef.current = true;
+    dragMultiTouchedRef.current = false;
+    setOpenTokenId(null);
+    setPhraseSel(null);
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
     }
-    document.addEventListener('selectionchange', onSelectionChange);
-    return () =>
-      document.removeEventListener('selectionchange', onSelectionChange);
-  }, [tokenById, body]);
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLElement>) {
+    if (!dragActiveRef.current) return;
+    const id = tokenIdAtPoint(e.clientX, e.clientY);
+    if (id === null || id === dragEndIdRef.current) return;
+    dragEndIdRef.current = id;
+    if (id !== dragStartIdRef.current) dragMultiTouchedRef.current = true;
+    const next = computePhraseSel(dragStartIdRef.current!, id);
+    setPhraseSel(next);
+  }
+
+  function handlePointerUp() {
+    if (!dragActiveRef.current) return;
+    const startId = dragStartIdRef.current;
+    const endId = dragEndIdRef.current;
+    const multi = dragMultiTouchedRef.current;
+    dragActiveRef.current = false;
+    dragStartIdRef.current = null;
+    dragEndIdRef.current = null;
+    dragMultiTouchedRef.current = false;
+    if (startId === null || endId === null) return;
+    if (!multi || startId === endId) {
+      // Single-token tap — open that token's popover.
+      setOpenTokenId(startId);
+      setPhraseSel(null);
+    }
+    // Multi-token: phraseSel already set by pointermove; leave FAB visible.
+  }
+
+  function handlePointerCancel() {
+    // Browser hijacked the gesture (most commonly a scroll).
+    dragActiveRef.current = false;
+    dragStartIdRef.current = null;
+    dragEndIdRef.current = null;
+    dragMultiTouchedRef.current = false;
+    setPhraseSel(null);
+  }
 
   const openPhraseModal = useCallback(() => {
     if (!phraseSel) return;
@@ -393,7 +439,14 @@ export function PassageReader({
 
   return (
     <>
-      <article ref={articleRef} className={styles.passage}>
+      <article
+        ref={articleRef}
+        className={styles.passage}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+      >
         {paragraphs.map((para, pIdx) => (
           <p key={pIdx} className={styles.paragraph}>
             {para.map((token, i) => {
@@ -475,11 +528,6 @@ export function PassageReader({
                       tabIndex={0}
                       data-token-id={token.id}
                       className={className}
-                      onClick={() =>
-                        setOpenTokenId((curr) =>
-                          curr === token.id ? null : token.id,
-                        )
-                      }
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
