@@ -158,7 +158,7 @@ export async function lookupGloss(
     const completion = await openai.chat.completions.create({
       model: 'gpt-5.4',
       temperature: 0.2,
-      max_tokens: 400,
+      max_completion_tokens: 400,
       messages: [
         {
           role: 'system',

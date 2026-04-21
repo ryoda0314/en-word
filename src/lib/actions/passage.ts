@@ -108,7 +108,7 @@ ${notes ? `Additional notes: ${notes}` : ''}`;
     const completion = await openai.chat.completions.create({
       model: 'gpt-5.4',
       temperature: 0.7,
-      max_tokens: 1200,
+      max_completion_tokens: 1200,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
