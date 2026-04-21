@@ -18,7 +18,7 @@
 
 @media (max-width: 47.99em) {
   :global(:root) {
-    --bottom-bar-h: 64px;
+    --bottom-bar-h: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 }
 @media (min-width: 48em) {
