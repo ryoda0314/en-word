@@ -1,0 +1,48 @@
+/* Phone-only bottom navigation bar. AppShell.Main's padding-bottom reads
+   --bottom-bar-h so content never sits underneath. */
+
+.bottomBarWrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+}
+
+.bottomBar {
+  border-radius: 0;
+  padding: 6px 4px;
+}
+
+@media (max-width: 47.99em) {
+  :global(:root) {
+    --bottom-bar-h: 64px;
+  }
+}
+@media (min-width: 48em) {
+  :global(:root) {
+    --bottom-bar-h: 0px;
+  }
+}
+
+.bottomItem {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 8px 2px;
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+  border-radius: 8px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.bottomItem:active {
+  background-color: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
+}
+
+.bottomItemActive {
+  color: var(--mantine-color-indigo-6);
+}
