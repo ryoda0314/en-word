@@ -79,7 +79,7 @@ Learner's sentence: ${sentence}`;
   let grade: GradeData;
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5.4',
       temperature: 0.2,
       max_tokens: 500,
       messages: [
