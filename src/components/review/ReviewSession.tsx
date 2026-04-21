@@ -25,7 +25,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useState, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
 
 import { StageBadge } from '@/components/vocab/StageBadge';
 import { gradeSentence, type GradeData } from '@/lib/actions/grade';
@@ -107,12 +107,6 @@ function displayExample(card: ReviewCard): { en: string; ja: string } {
     };
   }
   return { en: nonEmpty(card.context_sentence), ja: '' };
-}
-
-function clozeSentence(sentence: string, target: string): string {
-  if (!sentence || !target) return sentence;
-  const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return sentence.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), '_____');
 }
 
 export function ReviewSession({
@@ -292,11 +286,6 @@ function RecognizeCard({
   const name = displayName(card);
   const mja = displayMeaningJa(card);
   const ex = displayExample(card);
-  const cloze = useMemo(
-    () => (ex.en ? clozeSentence(ex.en, name) : ''),
-    [ex.en, name],
-  );
-  const fallbackNoCloze = !cloze;
 
   const userCorrect =
     answer.trim().toLowerCase() === name.toLowerCase() && answer.trim().length > 0;
@@ -305,15 +294,9 @@ function RecognizeCard({
     <Stack gap="md">
       <Stack gap={4}>
         <Text c="dimmed" size="xs" tt="uppercase" fw={500}>
-          {fallbackNoCloze ? t('meaningPrompt') : t('fillBlank')}
+          {t('meaningPrompt')}
         </Text>
-        {fallbackNoCloze ? (
-          <Text size="lg">{mja}</Text>
-        ) : (
-          <Text size="lg" lh={1.7}>
-            {cloze}
-          </Text>
-        )}
+        <Text size="lg">{mja}</Text>
       </Stack>
 
       <TextInput
